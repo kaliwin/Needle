@@ -1,10 +1,10 @@
 package http
 
 import (
-	"Needle/PublicStandard/newsletter/http/grpc/GrpcHttpStandard"
 	"bufio"
 	"bytes"
 	"fmt"
+	"github.com/kaliwin/Needle/PublicStandard/newsletter/http/grpc/GrpcHttpStandard"
 	"io"
 	"net/http"
 	"net/url"

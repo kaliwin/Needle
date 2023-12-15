@@ -1,7 +1,7 @@
 package http
 
 import (
-	"Needle/PublicStandard/newsletter/http/grpc/GrpcHttpStandard"
+	"github.com/kaliwin/Needle/PublicStandard/newsletter/http/grpc/GrpcHttpStandard"
 	"net/http"
 )
 
