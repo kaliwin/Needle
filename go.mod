@@ -1,4 +1,4 @@
-module Needle
+module github.com/kaliwin/Needle
 
 go 1.21
 
