@@ -506,9 +506,26 @@ func (r *RefactorStandardHttpReq) GetMethod() string {
 	return r.request.Method
 }
 
+// SetTarGetPath 设置目标地址
+func (r *RefactorStandardHttpReq) SetTarGetPath(tarGet *BurpMorePossibilityApi.HttpReqService) {
+	//r.request.URL.
+	r.request.URL.Host = fmt.Sprintf("%s:%d", tarGet.GetIp(), tarGet.GetPort())
+	if tarGet.GetSecure() {
+		r.request.URL.Scheme = "https"
+	} else {
+		r.request.URL.Scheme = "http"
+	}
+	r.httpReqService = tarGet
+}
+
 // SetHead 设置新头
 func (r *RefactorStandardHttpReq) SetHead(head http.Header) {
 	r.request.Header = head
+}
+
+// SetHostHerder 设置Host头
+func (r *RefactorStandardHttpReq) SetHostHerder(host string) {
+	r.request.Host = host
 }
 
 // SetRawPath 设置路径 包含参数 设置完整的Path 会覆盖原有的参数

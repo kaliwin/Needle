@@ -87,17 +87,14 @@ service HttpResEditBoxAssist{
   rpc ResHttpEdit (HttpEditBoxData) returns (ByteData){}   // 返回数据渲染
   rpc IsResHttpEditFor(HttpEditBoxData) returns (Boole){}  // 是否渲染 会频繁调用
 }
-
+// 获取上下文菜单项服务器  发送菜单项的名字
+service GetConTextMenuItemsServer {
+  rpc GetConTextMenuItems(Str)returns(MenuInfo){}
+}
 
 // 右键菜单项执行程序
 service ContextMenuItemsProvider{
   rpc MenuItemsProvider(ContextMenuItems) returns(MenuItemsReturn){}  // 菜单项处理
-}
-
-
-// 获取上下文菜单项服务器  发送菜单项的名字
-service GetConTextMenuItemsServer {
-  rpc GetConTextMenuItems(Str)returns(MenuInfo){}
 }
 
 
