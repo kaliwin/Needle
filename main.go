@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/kaliwin/Needle/MorePossibilityApi/grpc/BurpMorePossibilityApi"
 )
 
@@ -39,43 +38,46 @@ func (t Test) HttpHandleResponseReceived(ctx context.Context, data *BurpMorePoss
 
 func main() {
 
-	fmt.Println(fmt.Sprintf("%s:%d", "14.13.54.11", 56))
+	//MorePossibilityApi.ApiTest{}
 
-	//client := http.Client{}
-	////proxy, _ := url.Parse("http://127.0.0.1:8080")
 	//
-	//client.Transport = &http.Transport{
-	//	TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	//	//Proxy:           http.ProxyURL(proxy),
-	//}
+	//fmt.Println(fmt.Sprintf("%s:%d", "14.13.54.11", 56))
 	//
-	//request, _ := http.NewRequest("GET", "https://www.baidu.com/dsi", nil)
+	////client := http.Client{}
+	//////proxy, _ := url.Parse("http://127.0.0.1:8080")
+	////
+	////client.Transport = &http.Transport{
+	////	TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	////	//Proxy:           http.ProxyURL(proxy),
+	////}
+	////
+	////request, _ := http.NewRequest("GET", "https://www.baidu.com/dsi", nil)
+	////
+	////parse, _ := url.Parse("/")
+	////parse.Scheme = "http"
+	////parse.Host = "erin.server:9988"
+	////
+	////request.URL = parse
+	////request.Host = "erin.server:sd"
+	////do, err := client.Do(request)
+	////if err != nil {
+	////	log.Println(err)
+	////	return
+	////}
+	////fmt.Println(do.Status)
+	////
+	////all, _ := io.ReadAll(do.Body)
+	////fmt.Println(string(all))
 	//
-	//parse, _ := url.Parse("/")
-	//parse.Scheme = "http"
-	//parse.Host = "erin.server:9988"
-	//
-	//request.URL = parse
-	//request.Host = "erin.server:sd"
-	//do, err := client.Do(request)
-	//if err != nil {
-	//	log.Println(err)
-	//	return
-	//}
-	//fmt.Println(do.Status)
-	//
-	//all, _ := io.ReadAll(do.Body)
-	//fmt.Println(string(all))
-
-	//burpServer, err := MorePossibilityApi.NewGrpcServer(":9000")
-	//if err != nil {
-	//	log.Println(err)
-	//	os.Exit(0)
-	//}
-	//
-	//burpServer.RegisterHttpFlowHandlerServer(Test{})
-	//
-	//burpServer.Start()
-	//fmt.Println(burpServer.GetStatus())
-	//time.Sleep(time.Hour * 1)
+	////burpServer, err := MorePossibilityApi.NewGrpcServer(":9000")
+	////if err != nil {
+	////	log.Println(err)
+	////	os.Exit(0)
+	////}
+	////
+	////burpServer.RegisterHttpFlowHandlerServer(Test{})
+	////
+	////burpServer.Start()
+	////fmt.Println(burpServer.GetStatus())
+	////time.Sleep(time.Hour * 1)
 }

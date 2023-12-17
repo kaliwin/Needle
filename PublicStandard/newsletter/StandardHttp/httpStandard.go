@@ -25,12 +25,12 @@ const (
 	ContentLength = "Content-Length"
 )
 
-// GrpcHttpReq Grpc 下请求结构
+// GrpcHttpReq Grpc下请求结构
 type GrpcHttpReq interface {
 	BurpHttpData
 	GetUrl() string
 	GetHttpVersion() string
-	//GetHttpReqService() GrpcHttpReqService
+	GetHttpReqService() *BurpMorePossibilityApi.HttpReqService
 }
 
 type GrpcHttpReqService interface {

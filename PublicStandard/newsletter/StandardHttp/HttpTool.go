@@ -587,7 +587,7 @@ func (r *RefactorStandardHttpReq) ConvertHttpReqOwn(req GrpcHttpReq) error {
 	//r.url = uri
 	r.body = req.GetData()[req.GetBodyIndex():]
 	r.httpVersion = req.GetHttpVersion()
-	//req.GetHttpReqService()
+	r.httpReqService = req.GetHttpReqService()
 	return nil
 }
 
