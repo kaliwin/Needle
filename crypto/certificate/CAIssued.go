@@ -69,11 +69,18 @@ type CACert struct {
 func LoadPemCA(Cert []byte, Key []byte) (ca CACert, er error) {
 
 	certDERBlock, _ := pem.Decode(Cert) // 解码
+	keyDERBlock, _ := pem.Decode(Key)   // 解码
 
 	caCert, err := x509.ParseCertificate(certDERBlock.Bytes)   // 解析
-	keyDERBlock, _ := pem.Decode(Key)                          // 解码
 	caKey, err := x509.ParsePKCS8PrivateKey(keyDERBlock.Bytes) // 解析
 
+	return CACert{CaCert: caCert, CaKey: caKey}, err
+}
+
+// LoadCA 加载CA证书 cer
+func LoadCA(Cert []byte, Key []byte) (ca CACert, er error) {
+	caCert, err := x509.ParseCertificate(Cert)   // 解析
+	caKey, err := x509.ParsePKCS8PrivateKey(Key) // 解析
 	return CACert{CaCert: caCert, CaKey: caKey}, err
 }
 
@@ -155,6 +162,16 @@ func fatalIfErr(err error, msg string) {
 	if err != nil {
 		log.Fatalf("ERROR: %s: %s", msg, err)
 	}
+}
+
+// CACerToPemToByte pem 编码
+func CACerToPemToByte(ca []byte) []byte {
+	return pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: ca})
+}
+
+// CAPrivCerToByte pem 编码
+func CAPrivCerToByte(priv []byte) []byte {
+	return pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: priv})
 }
 
 // RandomSerialNumber 生产随机序列号

@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"github.com/kaliwin/Needle/MorePossibilityApi/grpc/BurpMorePossibilityApi"
+	"github.com/kaliwin/Needle/httpServer/middleman"
+	"log"
 )
 
 type Test struct {
@@ -37,6 +39,11 @@ func (t Test) HttpHandleResponseReceived(ctx context.Context, data *BurpMorePoss
 }
 
 func main() {
+
+	err := middleman.StartMiddleman(":443", "http://127.0.0.1:8080", "/root/tmp/burpCA.cer", "/root/tmp/burpCA-key.cer")
+	if err != nil {
+		log.Println(err)
+	}
 
 	//MorePossibilityApi.ApiTest{}
 
@@ -80,4 +87,14 @@ func main() {
 	////burpServer.Start()
 	////fmt.Println(burpServer.GetStatus())
 	////time.Sleep(time.Hour * 1)
+	//
+	//c, _ := os.ReadFile("/root/tmp/c.cer")
+	//privDER, _ := os.ReadFile("/root/tmp/k.cer")
+	//
+	//memory := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: c})
+	//toMemory := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: privDER})
+	//
+	//os.WriteFile("/root/tmp/c.pem", memory, 0644)
+	//os.WriteFile("/root/tmp/k.pem", toMemory, 0644)
+
 }
