@@ -22,213 +22,235 @@ func (w *writeToData) Write(p []byte) (n int, err error) {
 
 }
 
-// ConvertGrpcRequest 转换为Grpc的http请求
-func ConvertGrpcRequest(request *http.Request) (*BurpMorePossibilityApi.HttpReqData, error) {
-	ww := writeToData{Data: make([]byte, 0)}
-	err := request.Write(&ww)
-	if err != nil {
-		return nil, err
-	}
-
-	secure := false
-	port := 0
-	if request.URL.Scheme == "StandardHttp" {
-		secure = false
-		port = 80
-	}
-	if request.URL.Scheme == "https" {
-		secure = true
-		port = 443
-	}
-	if request.URL.Port() != "" {
-		port, err = strconv.Atoi(request.URL.Port())
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	reqTest := &BurpMorePossibilityApi.HttpReqData{
-		Data:        ww.Data,
-		Url:         request.URL.String(),
-		BodyIndex:   int64(len(ww.Data)) - request.ContentLength,
-		HttpVersion: request.Proto,
-		HttpReqService: &BurpMorePossibilityApi.HttpReqService{
-			Ip:     request.Host,
-			Port:   int32(port),
-			Secure: secure,
-		},
-	}
-	return reqTest, nil
-}
-
-// ConvertGrpcResponse 转换为Grpc的http响应
-func ConvertGrpcResponse(res *http.Response) (*BurpMorePossibilityApi.HttpResData, error) {
-	head := writeToData{Data: make([]byte, 0)}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	res.Header.Set("Content-Length", strconv.Itoa(len(body)))
-
-	err = res.Header.Write(&head)
-	if err != nil {
-		return nil, err
-	}
-	resDate := []byte(res.Proto + " " + res.Status + "\r\n")
-	resDate = append(resDate, head.Data...)
-	resDate = append(resDate, []byte("\r\n")...)
-	resDate = append(resDate, body...)
-
-	return &BurpMorePossibilityApi.HttpResData{
-		Data:        resDate,
-		StatusCode:  int32(res.StatusCode),
-		BodyIndex:   int64(len(resDate) - len(body)),
-		HttpVersion: res.Proto,
-	}, nil
-}
+//// ConvertGrpcRequest 转换为Grpc的http请求
+//func ConvertGrpcRequest(request *http.Request) (*BurpMorePossibilityApi.HttpReqData, error) {
+//	ww := writeToData{Data: make([]byte, 0)}
+//	err := request.Write(&ww)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	secure := false
+//	port := 0
+//	if request.URL.Scheme == "StandardHttp" {
+//		secure = false
+//		port = 80
+//	}
+//	if request.URL.Scheme == "https" {
+//		secure = true
+//		port = 443
+//	}
+//	if request.URL.Port() != "" {
+//		port, err = strconv.Atoi(request.URL.Port())
+//		if err != nil {
+//			return nil, err
+//		}
+//	}
+//
+//	reqTest := &BurpMorePossibilityApi.HttpReqData{
+//		Data:        ww.Data,
+//		Url:         request.URL.String(),
+//		BodyIndex:   int64(len(ww.Data)) - request.ContentLength,
+//		HttpVersion: request.Proto,
+//		HttpReqService: &BurpMorePossibilityApi.HttpReqService{
+//			Ip:     request.Host,
+//			Port:   int32(port),
+//			Secure: secure,
+//		},
+//	}
+//	return reqTest, nil
+//}
+//
+//// ConvertGrpcResponse 转换为Grpc的http响应
+//func ConvertGrpcResponse(res *http.Response) (*BurpMorePossibilityApi.HttpResData, error) {
+//	head := writeToData{Data: make([]byte, 0)}
+//
+//	body, err := io.ReadAll(res.Body)
+//	if err != nil {
+//		return nil, err
+//	}
+//	res.Header.Set("Content-Length", strconv.Itoa(len(body)))
+//
+//	err = res.Header.Write(&head)
+//	if err != nil {
+//		return nil, err
+//	}
+//	resDate := []byte(res.Proto + " " + res.Status + "\r\n")
+//	resDate = append(resDate, head.Data...)
+//	resDate = append(resDate, []byte("\r\n")...)
+//	resDate = append(resDate, body...)
+//
+//	return &BurpMorePossibilityApi.HttpResData{
+//		Data:        resDate,
+//		StatusCode:  int32(res.StatusCode),
+//		BodyIndex:   int64(len(resDate) - len(body)),
+//		HttpVersion: res.Proto,
+//	}, nil
+//}
 
 //// testModifier 测试修饰器
 //func (h HttpToolProcess) testModifier() {
 //	//h.Modifier
 //}
 
-// ConvertReqStandardHttp 请求转换为标准http组
-func ConvertReqStandardHttp(req *BurpMorePossibilityApi.HttpReqData) (StandardHttp, error) {
-	s := StandardHttp{}
-	c := s.ConvertHttpReqOwn(req)
-	return s, c
-}
+//// ConvertReqStandardHttp 请求转换为标准http组
+//func ConvertReqStandardHttp(req *BurpMorePossibilityApi.HttpReqData) (StandardHttp, error) {
+//	s := StandardHttp{}
+//	c := s.ConvertHttpReqOwn(req)
+//	return s, c
+//}
+//
+//// ConvertResStandardHttp 响应转换为标准http组
+//func ConvertResStandardHttp(res *BurpMorePossibilityApi.HttpResData) (StandardHttp, error) {
+//	s := StandardHttp{}
+//	c := s.ConvertHttpResOwn(res)
+//	return s, c
+//}
+//
+//// ConvertStandardHttp 转换为标准http组
+//func ConvertStandardHttp(req *BurpMorePossibilityApi.HttpReqData, res *BurpMorePossibilityApi.HttpResData) (StandardHttp, error) {
+//	s := StandardHttp{}
+//	c := s.ConvertHttpReqOwn(req)
+//	if c != nil {
+//		return s, c
+//	}
+//	c = s.ConvertHttpResOwn(res)
+//	return s, c
+//}
 
-// ConvertResStandardHttp 响应转换为标准http组
-func ConvertResStandardHttp(res *BurpMorePossibilityApi.HttpResData) (StandardHttp, error) {
-	s := StandardHttp{}
-	c := s.ConvertHttpResOwn(res)
-	return s, c
-}
+//// StandardHttp 标准http 基于标准库中的http封装
+//type StandardHttp struct {
+//	Req *StandardHttpReq // 请求
+//	Res *StandardHttpRes // 响应
+//}
 
-// ConvertStandardHttp 转换为标准http组
-func ConvertStandardHttp(req *BurpMorePossibilityApi.HttpReqData, res *BurpMorePossibilityApi.HttpResData) (StandardHttp, error) {
-	s := StandardHttp{}
-	c := s.ConvertHttpReqOwn(req)
-	if c != nil {
-		return s, c
-	}
-	c = s.ConvertHttpResOwn(res)
-	return s, c
-}
+//// ConvertHttpReqDate 转为burpAPI中的请求类型
+//func (s *StandardHttp) ConvertHttpReqDate() (*BurpMorePossibilityApi.HttpReqData, error) {
+//	req := s.Req
+//	if req == nil {
+//		return nil, fmt.Errorf("StandardHttp request is empty and cannot be converted")
+//	}
+//	ww := writeToData{Data: make([]byte, 0)}
+//
+//	head := req.ReqDate[:req.BodyIndex]
+//
+//	index := strings.Index(string(head), "\r\n")
+//	up := []byte(string(head)[:index+2])
+//
+//	//up := []byte(req.Method + " " + req.Url.RawPath + "HTTP/1.1")
+//	req.ReqHead.Set("Content-Length", strconv.Itoa(len(req.ReqBody)))
+//	err := req.ReqHead.Write(&ww)
+//	if err != nil {
+//		return nil, err
+//	}
+//	heads := ww.Data
+//	up = append(up, heads...)
+//	up = append(up, []byte("\r\n")...)
+//	up = append(up, req.ReqBody...)
+//	return &BurpMorePossibilityApi.HttpReqData{
+//		Data:           up,
+//		Url:            req.Url.String(),
+//		BodyIndex:      int64(len(up) - len(req.ReqBody)),
+//		HttpVersion:    req.HttpVersion,
+//		HttpReqService: req.TarGetInfo,
+//	}, nil
+//}
+//
+//// ConvertHttpReqOwn 将grpc的http请求转为标准请求
+//func (s *StandardHttp) ConvertHttpReqOwn(data *BurpMorePossibilityApi.HttpReqData) error {
+//	d := data.GetData()
+//	request, err := http.ReadRequest(bufio.NewReader(bytes.NewReader(CompelReqHttp1(data))))
+//	if err != nil {
+//		return err
+//	}
+//	parse, err := url.Parse(data.GetUrl())
+//	if err != nil {
+//		return err
+//	}
+//
+//	body := d[data.GetBodyIndex():]
+//
+//	s.Req = &StandardHttpReq{ // 构建标准请求
+//		Url:         parse,
+//		TarGetInfo:  data.GetHttpReqService(),
+//		ReqHead:     request.Header,
+//		ReqBody:     body,
+//		Method:      request.Method,
+//		HttpVersion: data.HttpVersion,
+//		ReqDate:     d,
+//		BodyIndex:   data.GetBodyIndex(),
+//	}
+//
+//	return nil
+//}
+//
+//func (s *StandardHttp) ConvertHttpResDate() (*BurpMorePossibilityApi.HttpResData, error) {
+//	if s.Res == nil {
+//		return nil, fmt.Errorf("StandardHttp response is empty and cannot be converted")
+//	}
+//	res := *s.Res
+//	return &BurpMorePossibilityApi.HttpResData{
+//		Data:        res.ResDate,
+//		StatusCode:  res.StatusCode,
+//		BodyIndex:   res.BodyIndex,
+//		HttpVersion: res.HttpVersion,
+//	}, nil
+//}
+//
+//// ConvertHttpResOwn 将grpc的http响应转回标准http组
+//func (s *StandardHttp) ConvertHttpResOwn(data *BurpMorePossibilityApi.HttpResData) error {
+//	resData := data.GetData()
+//	response, err := http.ReadResponse(bufio.NewReader(bytes.NewReader(CompelResHttp1(data))), nil)
+//	if err != nil {
+//		return err
+//	}
+//	s.Res = &StandardHttpRes{
+//		StatusCode:  int32(response.StatusCode),
+//		ResHead:     response.Header,
+//		ResBody:     resData[data.GetBodyIndex():],
+//		HttpVersion: data.HttpVersion,
+//		ResDate:     resData,
+//		BodyIndex:   data.GetBodyIndex(),
+//	}
+//	return nil
+//}
+//
+//// BuildRequest 构建http.Request
+//func (s *StandardHttp) BuildRequest() (*http.Request, error) {
+//	request, err := http.NewRequest(s.Req.Method, s.Req.Url.String(), bytes.NewReader(s.Req.ReqBody))
+//	if err != nil {
+//		return nil, err
+//	}
+//	request.Header = s.Req.ReqHead
+//	return request, nil
+//}
 
-// StandardHttp 标准http 基于标准库中的http封装
-type StandardHttp struct {
-	Req *StandardHttpReq // 请求
-	Res *StandardHttpRes // 响应
-}
+//// StandardHttpReq 标准请求
+//type StandardHttpReq struct {
+//	Url         *url.URL
+//	TarGetInfo  *BurpMorePossibilityApi.HttpReqService // 目标信息
+//	ReqHead     http.Header
+//	ReqBody     []byte // 请求体
+//	Method      string // 请求方法
+//	HttpVersion string // http版本
+//	ReqDate     []byte // 完整请求报文 指针禁止修改
+//	BodyIndex   int64  // 体开始下标 用于后续截取请求体并计算长度
+//}
+//
+//// StandardHttpRes 标准响应
+//type StandardHttpRes struct {
+//	StatusCode  int32       // 响应码
+//	ResHead     http.Header // 响应头
+//	ResBody     []byte      // 响应体
+//	HttpVersion string      // http版本
+//	ResDate     []byte      // 完整响应报文 指针禁止修改
+//	BodyIndex   int64       // 体开始下标 用于后续截取请求体并计算长度
+//}
 
-// StandardHttpGroup 标准http组
-type StandardHttpGroup struct {
+// HttpStandardGroup 标准http组
+type HttpStandardGroup struct {
 	Req *RefactorStandardHttpReq // 请求
 	Res *RefactorStandardHttpRes // 响应
-}
-
-// ConvertHttpReqDate 转为burpAPI中的请求类型
-func (s *StandardHttp) ConvertHttpReqDate() (*BurpMorePossibilityApi.HttpReqData, error) {
-	req := s.Req
-	if req == nil {
-		return nil, fmt.Errorf("StandardHttp request is empty and cannot be converted")
-	}
-	ww := writeToData{Data: make([]byte, 0)}
-
-	head := req.ReqDate[:req.BodyIndex]
-
-	index := strings.Index(string(head), "\r\n")
-	up := []byte(string(head)[:index+2])
-
-	//up := []byte(req.Method + " " + req.Url.RawPath + "HTTP/1.1")
-	req.ReqHead.Set("Content-Length", strconv.Itoa(len(req.ReqBody)))
-	err := req.ReqHead.Write(&ww)
-	if err != nil {
-		return nil, err
-	}
-	heads := ww.Data
-	up = append(up, heads...)
-	up = append(up, []byte("\r\n")...)
-	up = append(up, req.ReqBody...)
-	return &BurpMorePossibilityApi.HttpReqData{
-		Data:           up,
-		Url:            req.Url.String(),
-		BodyIndex:      int64(len(up) - len(req.ReqBody)),
-		HttpVersion:    req.HttpVersion,
-		HttpReqService: req.TarGetInfo,
-	}, nil
-}
-
-// ConvertHttpReqOwn 将grpc的http请求转为标准请求
-func (s *StandardHttp) ConvertHttpReqOwn(data *BurpMorePossibilityApi.HttpReqData) error {
-	d := data.GetData()
-	request, err := http.ReadRequest(bufio.NewReader(bytes.NewReader(CompelReqHttp1(data))))
-	if err != nil {
-		return err
-	}
-	parse, err := url.Parse(data.GetUrl())
-	if err != nil {
-		return err
-	}
-
-	body := d[data.GetBodyIndex():]
-
-	s.Req = &StandardHttpReq{ // 构建标准请求
-		Url:         parse,
-		TarGetInfo:  data.GetHttpReqService(),
-		ReqHead:     request.Header,
-		ReqBody:     body,
-		Method:      request.Method,
-		HttpVersion: data.HttpVersion,
-		ReqDate:     d,
-		BodyIndex:   data.GetBodyIndex(),
-	}
-
-	return nil
-}
-
-func (s *StandardHttp) ConvertHttpResDate() (*BurpMorePossibilityApi.HttpResData, error) {
-	if s.Res == nil {
-		return nil, fmt.Errorf("StandardHttp response is empty and cannot be converted")
-	}
-	res := *s.Res
-	return &BurpMorePossibilityApi.HttpResData{
-		Data:        res.ResDate,
-		StatusCode:  res.StatusCode,
-		BodyIndex:   res.BodyIndex,
-		HttpVersion: res.HttpVersion,
-	}, nil
-}
-
-// ConvertHttpResOwn 将grpc的http响应转回标准http组
-func (s *StandardHttp) ConvertHttpResOwn(data *BurpMorePossibilityApi.HttpResData) error {
-	resData := data.GetData()
-	response, err := http.ReadResponse(bufio.NewReader(bytes.NewReader(CompelResHttp1(data))), nil)
-	if err != nil {
-		return err
-	}
-	s.Res = &StandardHttpRes{
-		StatusCode:  int32(response.StatusCode),
-		ResHead:     response.Header,
-		ResBody:     resData[data.GetBodyIndex():],
-		HttpVersion: data.HttpVersion,
-		ResDate:     resData,
-		BodyIndex:   data.GetBodyIndex(),
-	}
-	return nil
-}
-
-// BuildRequest 构建http.Request
-func (s *StandardHttp) BuildRequest() (*http.Request, error) {
-	request, err := http.NewRequest(s.Req.Method, s.Req.Url.String(), bytes.NewReader(s.Req.ReqBody))
-	if err != nil {
-		return nil, err
-	}
-	request.Header = s.Req.ReqHead
-	return request, nil
 }
 
 // CompelReqHttp1 强制http1避免构造出错,客户端会自动处理通信时http2的处理
@@ -262,28 +284,6 @@ func CompelResHttp1(r BurpHttpData) []byte {
 	newUp += head[index+2:]
 	return append([]byte(newUp), r.GetData()[r.GetBodyIndex():]...)
 
-}
-
-// StandardHttpReq 标准请求
-type StandardHttpReq struct {
-	Url         *url.URL
-	TarGetInfo  *BurpMorePossibilityApi.HttpReqService // 目标信息
-	ReqHead     http.Header
-	ReqBody     []byte // 请求体
-	Method      string // 请求方法
-	HttpVersion string // http版本
-	ReqDate     []byte // 完整请求报文 指针禁止修改
-	BodyIndex   int64  // 体开始下标 用于后续截取请求体并计算长度
-}
-
-// StandardHttpRes 标准响应
-type StandardHttpRes struct {
-	StatusCode  int32       // 响应码
-	ResHead     http.Header // 响应头
-	ResBody     []byte      // 响应体
-	HttpVersion string      // http版本
-	ResDate     []byte      // 完整响应报文 指针禁止修改
-	BodyIndex   int64       // 体开始下标 用于后续截取请求体并计算长度
 }
 
 // RefactorStandardHttpRes 重构标准响应
@@ -404,13 +404,22 @@ func (r *RefactorStandardHttpRes) BuildGrpcRes() (*BurpMorePossibilityApi.HttpRe
 	}, nil
 }
 
+// BuildResponse 构建响应
+func (r *RefactorStandardHttpRes) BuildResponse() (*http.Response, error) {
+	res, err := r.BuildGrpcRes() // 先构建grpc的响应
+	if err != nil {
+		return nil, err
+	}
+	return http.ReadResponse(bufio.NewReader(bytes.NewReader(CompelResHttp1(res))), nil)
+}
+
 // ConvertHttpResOwn 转换为自身响应
 func (r *RefactorStandardHttpRes) ConvertHttpResOwn(res *BurpMorePossibilityApi.HttpResData, req *RefactorStandardHttpReq) error {
 
 	r.standardHttpReq = req
-	http1Res := CompelResHttp1(res)
+	//http1Res := CompelResHttp1(res)
 	r.statusCode = res.GetStatusCode()
-	response, err := http.ReadResponse(bufio.NewReader(bytes.NewReader(http1Res)), nil)
+	response, err := http.ReadResponse(bufio.NewReader(bytes.NewReader(CompelResHttp1(res))), nil)
 	if err != nil {
 		return err
 	}
@@ -443,13 +452,13 @@ func (r *RefactorStandardHttpRes) ConvertHttpResponseOwn(response *http.Response
 	return nil
 }
 
-func (r *RefactorStandardHttpRes) TestRes() {
-
-	fmt.Println(r.resHead)
-	fmt.Println(r.statusCode)
-	fmt.Println(r.httpVersion)
-
-}
+//func (r *RefactorStandardHttpRes) TestRes() {
+//
+//	fmt.Println(r.resHead)
+//	fmt.Println(r.statusCode)
+//	fmt.Println(r.httpVersion)
+//
+//}
 
 // RefactorStandardHttpReq 重构标准请求
 type RefactorStandardHttpReq struct {
@@ -681,8 +690,8 @@ func BuildRefactorStandardHttpRequest(req *http.Request, client HttpClient) (Ref
 }
 
 // BuildStandardHttpGroup 构建标准http组
-func BuildStandardHttpGroup(httpGroup *BurpMorePossibilityApi.HttpReqAndRes, client HttpClient) (StandardHttpGroup, error) {
-	group := StandardHttpGroup{}
+func BuildStandardHttpGroup(httpGroup *BurpMorePossibilityApi.HttpReqAndRes, client HttpClient) (HttpStandardGroup, error) {
+	group := HttpStandardGroup{}
 	req := httpGroup.GetReq()
 	own, err := BuildRefactorStandardHttpReq(req, client)
 	if err != nil {

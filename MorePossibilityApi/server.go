@@ -129,6 +129,11 @@ func (s BurpGrpcServer) GetStatus() error {
 	return nil
 }
 
+// Stop 停止服务
+func (s BurpGrpcServer) Stop() {
+	s.Server.Stop()
+}
+
 // realTimeTrafficMirroring 实时流量镜像
 type realTimeTrafficMirroring struct {
 	BurpMorePossibilityApi.UnimplementedRealTimeTrafficMirroringServer
