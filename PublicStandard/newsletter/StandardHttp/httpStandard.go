@@ -33,6 +33,13 @@ type GrpcHttpReq interface {
 	GetHttpReqService() *BurpMorePossibilityApi.HttpReqService
 }
 
+// GrpcHttpRes Grpc下响应结构
+type GrpcHttpRes interface {
+	BurpHttpData
+	GetHttpVersion() string
+	//GetStatusCode() string
+}
+
 type GrpcHttpReqService interface {
 	GetIp() string
 	GetPort() int32

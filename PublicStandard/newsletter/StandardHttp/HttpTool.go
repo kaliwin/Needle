@@ -416,13 +416,14 @@ func (r *RefactorStandardHttpRes) BuildResponse() (*http.Response, error) {
 // ConvertHttpResOwn 转换为自身响应
 func (r *RefactorStandardHttpRes) ConvertHttpResOwn(res *BurpMorePossibilityApi.HttpResData, req *RefactorStandardHttpReq) error {
 
-	r.standardHttpReq = req
-	//http1Res := CompelResHttp1(res)
-	r.statusCode = res.GetStatusCode()
-	response, err := http.ReadResponse(bufio.NewReader(bytes.NewReader(CompelResHttp1(res))), nil)
+	response, err := BuildResponse(res)
 	if err != nil {
 		return err
 	}
+	r.standardHttpReq = req
+	//http1Res := CompelResHttp1(res)
+	r.statusCode = res.GetStatusCode()
+
 	index := strings.Index(response.Status, " ")
 	r.codeString = response.Status[index+1:] // 响应码字符串 200 OK 取后面的OK
 
@@ -581,9 +582,9 @@ func (r *RefactorStandardHttpReq) SetBody(body []byte) {
 
 // ConvertHttpReqOwn 转换为自身请求
 func (r *RefactorStandardHttpReq) ConvertHttpReqOwn(req GrpcHttpReq) error {
-	http1 := CompelReqHttp1(req) // 强转为http1
+	//http1 := CompelReqHttp1(req) // 强转为http1
 
-	request, err := http.ReadRequest(bufio.NewReader(bytes.NewReader(http1)))
+	request, err := BuildRequest(req)
 	if err != nil {
 		return err
 	}
@@ -680,6 +681,57 @@ func BuildRefactorStandardHttpReq(req *BurpMorePossibilityApi.HttpReqData, clien
 	httpReq := RefactorStandardHttpReq{}
 	httpReq.SetClient(client)
 	return httpReq, httpReq.ConvertHttpReqOwn(req)
+}
+
+// BuildRequest 构建请求 将grpc的请求转换为http请求
+func BuildRequest(req GrpcHttpReq) (*http.Request, error) {
+	return http.ReadRequest(bufio.NewReader(bytes.NewReader(CompelReqHttp1(req))))
+}
+
+// BuildResponse 构建响应 将grpc的响应转换为http响应
+func BuildResponse(res GrpcHttpRes) (*http.Response, error) {
+	return http.ReadResponse(bufio.NewReader(bytes.NewReader(CompelResHttp1(res))), nil)
+}
+
+// BuildGrpcRequest 构建Grpc请求实例  <===== 等待测试 =====>
+func BuildGrpcRequest(req *http.Request) (*BurpMorePossibilityApi.HttpReqData, error) {
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		body = []byte{}
+	}
+	req.Header.Set(ContentLength, strconv.Itoa(len(body))) // 设置ContentLength 长度
+	req.ContentLength = int64(len(body))
+	up := []byte(req.Method + " " + UrlToRawPath(req.URL) + " " + HTTP1 + "\r\n")
+	ww := writeToData{Data: make([]byte, 0)}
+	err = req.Header.Write(&ww)
+	if err != nil {
+		return nil, err
+	}
+	// 组装完整请求报文
+	up = append(up, ww.Data...)
+	up = append(up, []byte("\r\n")...)
+	up = append(up, body...)
+
+	atoi, err := strconv.Atoi(req.URL.Port())
+	if err != nil {
+		return nil, err
+	}
+
+	Secure := false
+	if strings.Contains(req.URL.Scheme, "s") {
+		Secure = true
+	}
+	return &BurpMorePossibilityApi.HttpReqData{
+		Data:        up,
+		Url:         req.URL.String(),
+		BodyIndex:   int64(len(up) - len(body)), // 体开始下标
+		HttpVersion: req.Proto,
+		HttpReqService: &BurpMorePossibilityApi.HttpReqService{
+			Ip:     req.URL.Hostname(),
+			Port:   int32(atoi),
+			Secure: Secure,
+		},
+	}, nil
 }
 
 // BuildRefactorStandardHttpRequest 构建转换为自身请求
