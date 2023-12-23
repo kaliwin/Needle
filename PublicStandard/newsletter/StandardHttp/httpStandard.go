@@ -50,7 +50,3 @@ type BurpHttpData interface {
 	GetData() []byte
 	GetBodyIndex() int64
 }
-
-func TemporaryTransfer() {
-
-}

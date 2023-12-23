@@ -445,6 +445,13 @@ func (r *RefactorStandardHttpRes) ConvertHttpResponseOwn(response *http.Response
 	r.codeString = response.Status[index+1:] // 响应码字符串 200 OK 取后面的OK
 	r.resHead = response.Header
 	body, err := io.ReadAll(response.Body)
+
+	if err != nil {
+		if body == nil {
+			return err
+		}
+	}
+
 	if err != nil {
 		return err
 	}

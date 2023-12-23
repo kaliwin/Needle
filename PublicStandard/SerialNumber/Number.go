@@ -1,6 +1,8 @@
 package SerialNumber
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // 各个模块的序列号
 const (
@@ -16,4 +18,21 @@ const (
 // IDCalculate id计算
 func IDCalculate() {
 	fmt.Println(ReflectionXSSPocPayloadType)
+}
+
+type name struct {
+}
+
+func (n name) getData() []byte {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (n name) GetBodyIndex() int64 {
+	//TODO implement me
+	panic("implement me")
+}
+
+func sd() {
+
 }

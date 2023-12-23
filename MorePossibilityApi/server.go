@@ -110,15 +110,9 @@ func (s BurpGrpcServer) RegisterHttpFlowHandlerServer(h HttpFlowHandlerServer) {
 
 //  ------------------------------------------------  //
 
-// Start 开启协程启动不会堵塞
-func (s BurpGrpcServer) Start() {
-	go func() {
-		err := s.Server.Serve(s.netList)
-		if err != nil {
-			s.serverStatus = err.Error()
-			log.Println(err)
-		}
-	}()
+// Start 启动服务 成功会陷入堵塞
+func (s BurpGrpcServer) Start() error {
+	return s.Server.Serve(s.netList)
 }
 
 // GetStatus 获取服务状态
