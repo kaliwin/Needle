@@ -451,10 +451,6 @@ func (r *RefactorStandardHttpRes) ConvertHttpResponseOwn(response *http.Response
 			return err
 		}
 	}
-
-	if err != nil {
-		return err
-	}
 	r.resBody = body
 	r.httpVersion = response.Proto
 	return nil
