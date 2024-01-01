@@ -28,6 +28,7 @@ const (
 	BurpServer_RegisterRealTimeTrafficMirroring_FullMethodName = "/BurpMorePossibilityApi.BurpServer/RegisterRealTimeTrafficMirroring"
 	BurpServer_RegisterServerList_FullMethodName               = "/BurpMorePossibilityApi.BurpServer/RegisterServerList"
 	BurpServer_GetProxyHistory_FullMethodName                  = "/BurpMorePossibilityApi.BurpServer/GetProxyHistory"
+	BurpServer_ReportIssue_FullMethodName                      = "/BurpMorePossibilityApi.BurpServer/ReportIssue"
 )
 
 // BurpServerClient is the client API for BurpServer service.
@@ -43,6 +44,7 @@ type BurpServerClient interface {
 	// 由于数据过大默认单个消息最大为500MB 客户端也需要处理 后续将提供分块传输 过滤提取等方式
 	// 修改为服务端流的方式进行流量传输
 	GetProxyHistory(ctx context.Context, in *Str, opts ...grpc.CallOption) (BurpServer_GetProxyHistoryClient, error)
+	ReportIssue(ctx context.Context, in *AuditIssue, opts ...grpc.CallOption) (*ProcessingStatus, error)
 }
 
 type burpServerClient struct {
@@ -126,6 +128,15 @@ func (x *burpServerGetProxyHistoryClient) Recv() (*HttpReqAndRes, error) {
 	return m, nil
 }
 
+func (c *burpServerClient) ReportIssue(ctx context.Context, in *AuditIssue, opts ...grpc.CallOption) (*ProcessingStatus, error) {
+	out := new(ProcessingStatus)
+	err := c.cc.Invoke(ctx, BurpServer_ReportIssue_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BurpServerServer is the server API for BurpServer service.
 // All implementations must embed UnimplementedBurpServerServer
 // for forward compatibility
@@ -139,6 +150,7 @@ type BurpServerServer interface {
 	// 由于数据过大默认单个消息最大为500MB 客户端也需要处理 后续将提供分块传输 过滤提取等方式
 	// 修改为服务端流的方式进行流量传输
 	GetProxyHistory(*Str, BurpServer_GetProxyHistoryServer) error
+	ReportIssue(context.Context, *AuditIssue) (*ProcessingStatus, error)
 	mustEmbedUnimplementedBurpServerServer()
 }
 
@@ -154,6 +166,9 @@ func (UnimplementedBurpServerServer) RegisterServerList(context.Context, *Servic
 }
 func (UnimplementedBurpServerServer) GetProxyHistory(*Str, BurpServer_GetProxyHistoryServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetProxyHistory not implemented")
+}
+func (UnimplementedBurpServerServer) ReportIssue(context.Context, *AuditIssue) (*ProcessingStatus, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReportIssue not implemented")
 }
 func (UnimplementedBurpServerServer) mustEmbedUnimplementedBurpServerServer() {}
 
@@ -228,6 +243,24 @@ func (x *burpServerGetProxyHistoryServer) Send(m *HttpReqAndRes) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _BurpServer_ReportIssue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuditIssue)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BurpServerServer).ReportIssue(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BurpServer_ReportIssue_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BurpServerServer).ReportIssue(ctx, req.(*AuditIssue))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BurpServer_ServiceDesc is the grpc.ServiceDesc for BurpServer service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -238,6 +271,10 @@ var BurpServer_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegisterServerList",
 			Handler:    _BurpServer_RegisterServerList_Handler,
+		},
+		{
+			MethodName: "ReportIssue",
+			Handler:    _BurpServer_ReportIssue_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
