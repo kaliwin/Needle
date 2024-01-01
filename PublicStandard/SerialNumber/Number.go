@@ -1,9 +1,5 @@
 package SerialNumber
 
-import (
-	"fmt"
-)
-
 // 各个模块的序列号
 const (
 	SeparatorStr             = "-"             // 分隔符
@@ -14,25 +10,3 @@ const (
 	ErinNumberStrID          = "Erin"          // Erin 艾琳
 	EpicShelterNumberStrID   = "EpicShelter"   // EpicShelter 史诗庇护所
 )
-
-// IDCalculate id计算
-func IDCalculate() {
-	fmt.Println(ReflectionXSSPocPayloadType)
-}
-
-type name struct {
-}
-
-func (n name) getData() []byte {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (n name) GetBodyIndex() int64 {
-	//TODO implement me
-	panic("implement me")
-}
-
-func sd() {
-
-}

@@ -413,6 +413,19 @@ func (r *RefactorStandardHttpRes) BuildResponse() (*http.Response, error) {
 	return http.ReadResponse(bufio.NewReader(bytes.NewReader(CompelResHttp1(res))), nil)
 }
 
+// BuildHttpReqAndRes 构建http请求和响应
+func (r *RefactorStandardHttpRes) BuildHttpReqAndRes() (*BurpMorePossibilityApi.HttpReqAndRes, error) {
+	req, err := r.standardHttpReq.BuildReqData()
+	res, err := r.BuildGrpcRes()
+	if err != nil {
+		return nil, err
+	}
+	return &BurpMorePossibilityApi.HttpReqAndRes{
+		Req: req,
+		Res: res,
+	}, nil
+}
+
 // ConvertHttpResOwn 转换为自身响应
 func (r *RefactorStandardHttpRes) ConvertHttpResOwn(res *BurpMorePossibilityApi.HttpResData, req *RefactorStandardHttpReq) error {
 
@@ -776,4 +789,16 @@ func UrlToRawPath(r *url.URL) string {
 		return r.Path + q
 	}
 	return "/"
+}
+
+// NewRefactorStandardHttpReq 新建标准请求
+func NewRefactorStandardHttpReq(url string, method string, body []byte, client HttpClient) (RefactorStandardHttpReq, error) {
+	req, err := http.NewRequest(method, url, bytes.NewReader(body))
+	if err != nil {
+		return RefactorStandardHttpReq{}, err
+	}
+	req.Header = http.Header{
+		"User-Agent": []string{DefaultUA},
+	}
+	return BuildRefactorStandardHttpRequest(req, client)
 }

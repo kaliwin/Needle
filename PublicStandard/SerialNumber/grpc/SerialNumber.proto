@@ -15,7 +15,7 @@ package SerialNumberGrpcAPI;
 
 
 enum SerialNumber{
-    PublicNumberID = 0; //公众号ID
+    PublicNumberID = 0; //公众ID
 }
 
 

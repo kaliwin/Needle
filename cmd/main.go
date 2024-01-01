@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	err := dns.ServeDNS(":53", "com", "192.168.3.104")
+	err := dns.ServeDNS(":5353", "server", "192.168.3.104")
 	if err != nil {
 		log.Println(err)
 	}

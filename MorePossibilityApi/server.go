@@ -4,42 +4,40 @@ import (
 	"context"
 	"fmt"
 	"github.com/kaliwin/Needle/MorePossibilityApi/grpc/BurpMorePossibilityApi"
-	"github.com/kaliwin/Needle/PublicStandard/newsletter/StandardHttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"log"
 	"net"
 )
 
-// ApiTest api测试
-type ApiTest struct {
-	BurpMorePossibilityApi.UnimplementedHttpFlowHandlerServer
-}
+//// ApiTest api测试
+//type ApiTest struct {
+//	BurpMorePossibilityApi.UnimplementedHttpFlowHandlerServer
+//}
+//
+//func (n ApiTest) HttpHandleRequestReceived(ctx context.Context, data *BurpMorePossibilityApi.HttpFlowReqData) (*BurpMorePossibilityApi.HttpRequestAction, error) {
+//
+//	return &BurpMorePossibilityApi.HttpRequestAction{Continue: true}, nil
+//}
+//
+//func (n ApiTest) HttpHandleResponseReceived(ctx context.Context, data *BurpMorePossibilityApi.HttpFlowResData) (*BurpMorePossibilityApi.HttpResponseAction, error) {
+//
+//	fmt.Println(data.GetHttpReqAndRes().GetReq().GetUrl())
+//	group, err := StandardHttp.BuildStandardHttpGroup(data.GetHttpReqAndRes(), nil)
+//
+//	if err != nil {
+//		log.Println(err)
+//
+//	} else {
+//		fmt.Println(group.Req.GetUrl())
+//		fmt.Println(group.Req.GetHead())
+//	}
+//
+//	return &BurpMorePossibilityApi.HttpResponseAction{Continue: true}, nil
+//}
 
-func (n ApiTest) HttpHandleRequestReceived(ctx context.Context, data *BurpMorePossibilityApi.HttpFlowReqData) (*BurpMorePossibilityApi.HttpRequestAction, error) {
-	//TODO implement me
-	return &BurpMorePossibilityApi.HttpRequestAction{Continue: true}, nil
-}
-
-func (n ApiTest) HttpHandleResponseReceived(ctx context.Context, data *BurpMorePossibilityApi.HttpFlowResData) (*BurpMorePossibilityApi.HttpResponseAction, error) {
-
-	fmt.Println(data.GetHttpReqAndRes().GetReq().GetUrl())
-	group, err := StandardHttp.BuildStandardHttpGroup(data.GetHttpReqAndRes(), nil)
-
-	if err != nil {
-		log.Println(err)
-
-	} else {
-		fmt.Println(group.Req.GetUrl())
-		fmt.Println(group.Req.GetHead())
-	}
-
-	return &BurpMorePossibilityApi.HttpResponseAction{Continue: true}, nil
-}
-
-// NewGrpcServer 创建一个新的服务
-func NewGrpcServer(address string, opt ...grpc.ServerOption) (BurpGrpcServer, error) {
+// NewBurpGrpcServer 创建一个新的服务
+func NewBurpGrpcServer(address string, opt ...grpc.ServerOption) (BurpGrpcServer, error) {
 	server := BurpGrpcServer{}
 	server.serverStatus = ""
 	listen, err := net.Listen("tcp", address)

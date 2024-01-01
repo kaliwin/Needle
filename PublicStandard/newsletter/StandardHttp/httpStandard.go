@@ -20,11 +20,6 @@ type HttpClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-const (
-	HTTP1         = "HTTP/1.1"
-	ContentLength = "Content-Length"
-)
-
 // GrpcHttpReq Grpc下请求结构
 type GrpcHttpReq interface {
 	BurpHttpData
@@ -50,3 +45,17 @@ type BurpHttpData interface {
 	GetData() []byte
 	GetBodyIndex() int64
 }
+
+const (
+	HTTP1         = "HTTP/1.1"
+	ContentLength = "Content-Length"
+)
+
+// DefaultHeader 默认请求头
+var DefaultHeader = http.Header{
+	"User-Agent": []string{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.71 Safari/537.36"},
+}
+
+const (
+	DefaultUA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.71 Safari/537.36"
+)
