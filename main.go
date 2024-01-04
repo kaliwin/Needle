@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/kaliwin/Needle/MorePossibilityApi/grpc/BurpMorePossibilityApi"
-	"github.com/kaliwin/Needle/PublicStandard/newsletter/StandardHttp"
+	http2 "github.com/kaliwin/Needle/network/http"
 	"io"
 	"log"
 	"net/http"
@@ -68,6 +68,9 @@ func main() {
 	//	log.Println(err)
 	//}
 
-	fmt.Println(StandardHttp.DefaultHeader["sd"])
+	fmt.Println(http2.DefaultHeader["sd"])
+	//
+	//client := BurpMorePossibilityApi.NewBurpServerClient(nil)
+	//client.
 
 }

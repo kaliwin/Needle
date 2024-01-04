@@ -1,4 +1,4 @@
-package StandardHttp
+package http
 
 import (
 	"bufio"

@@ -1,4 +1,4 @@
-package StandardHttp
+package http
 
 import (
 	"github.com/kaliwin/Needle/MorePossibilityApi/grpc/BurpMorePossibilityApi"

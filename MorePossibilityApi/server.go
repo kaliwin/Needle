@@ -10,32 +10,6 @@ import (
 	"net"
 )
 
-//// ApiTest api测试
-//type ApiTest struct {
-//	BurpMorePossibilityApi.UnimplementedHttpFlowHandlerServer
-//}
-//
-//func (n ApiTest) HttpHandleRequestReceived(ctx context.Context, data *BurpMorePossibilityApi.HttpFlowReqData) (*BurpMorePossibilityApi.HttpRequestAction, error) {
-//
-//	return &BurpMorePossibilityApi.HttpRequestAction{Continue: true}, nil
-//}
-//
-//func (n ApiTest) HttpHandleResponseReceived(ctx context.Context, data *BurpMorePossibilityApi.HttpFlowResData) (*BurpMorePossibilityApi.HttpResponseAction, error) {
-//
-//	fmt.Println(data.GetHttpReqAndRes().GetReq().GetUrl())
-//	group, err := StandardHttp.BuildStandardHttpGroup(data.GetHttpReqAndRes(), nil)
-//
-//	if err != nil {
-//		log.Println(err)
-//
-//	} else {
-//		fmt.Println(group.Req.GetUrl())
-//		fmt.Println(group.Req.GetHead())
-//	}
-//
-//	return &BurpMorePossibilityApi.HttpResponseAction{Continue: true}, nil
-//}
-
 // NewBurpGrpcServer 创建一个新的服务
 func NewBurpGrpcServer(address string, opt ...grpc.ServerOption) (BurpGrpcServer, error) {
 	server := BurpGrpcServer{}

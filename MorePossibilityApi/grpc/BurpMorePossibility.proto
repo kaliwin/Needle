@@ -374,12 +374,12 @@ message httpReqAndRes {
 
 // http 单个请求 包含头部和体
 message httpReqData {
-  bytes Data = 1;                       //请求包数据
-  string Url = 2;                       //请求url
-  int64 BodyIndex = 3;                  //请求体开始下标,如若请求体下标与总长度一致就是没有请求体
+  bytes Data = 1;                       // 请求包数据
+  string Url = 2;                       // 请求url
+  int64 BodyIndex = 3;                  // 请求体开始下标,如若请求体下标与总长度一致就是没有请求体
   string httpVersion = 4;               // http版本
   httpReqService httpReqService = 5;    // 目标信息
-  repeated Range Range = 6;                    // 标记请求体范围
+  repeated Range Range = 6;             // 标记请求体范围
 }
 
 // Range 标记下标范围
@@ -398,10 +398,10 @@ message httpReqGroup{
 
 // http 单个响应 包含头部和体
 message httpResData {
-  bytes Data = 1;    //请求包数据
+  bytes Data = 1;    //响应包数据
   int32 StatusCode = 2 ; //状态码
   int64 BodyIndex = 3;   //请求体开始下标,如若请求体下标与总长度一致就是没有请求体
-  string httpVersion = 5;
+  string httpVersion = 5;    // http版本
   repeated Range Range = 6;       // 标记请求体范围
 }
 
@@ -431,7 +431,7 @@ message httpInfo {
 message annotationsText {
   bool isInfo = 1;           // 是否有注解信息
   string notes = 2 ;         // 注解文本
-  highlightColor color = 3;          // 颜色
+  highlightColor color = 3;  // 颜色
 }
 
 // 流量来源类型
