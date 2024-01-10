@@ -2,14 +2,16 @@
 
 
 
+Needle是ManDown的一部分
+
+隶属于MorePossibility https://github.com/MorePossibility
+
 
 
 ```
 Needle 针 
-寓意 用针将万物编织起来 -- test
+寓意 用针将万物编织起来
 ```
-
-
 
 
 
