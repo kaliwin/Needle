@@ -8,10 +8,6 @@ option go_package = "/HttpStructureStandard";                        //go 实例
 
 
 
-
-
-
-
 // HttpRawByteStreamList http原始数据流列表
 message HttpRawByteStreamList {
   repeated httpReqAndRes httpRawByteStreamList = 1; // http原始数据流列表
