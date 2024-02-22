@@ -1,18 +1,18 @@
 package http
 
 import (
-	"github.com/kaliwin/Needle/MorePossibilityApi/grpc/BurpMorePossibilityApi"
+	"github.com/kaliwin/Needle/PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard"
 	"net/http"
 )
 
 // ConvertHttp http转变接口 需要转到 httpReqData , 再由httpReqData转回自己的类型
 // 转换为自己的时候要修改或构建自己的属性
 type ConvertHttp interface {
-	ConvertHttpReqDate() (*BurpMorePossibilityApi.HttpReqData, error)
-	ConvertHttpReqOwn(*BurpMorePossibilityApi.HttpReqData) error
+	ConvertHttpReqDate() (*HttpStructureStandard.HttpReqData, error)
+	ConvertHttpReqOwn(*HttpStructureStandard.HttpReqData) error
 
-	ConvertHttpResDate() (*BurpMorePossibilityApi.HttpResData, error)
-	ConvertHttpResOwn(*BurpMorePossibilityApi.HttpResData) error
+	ConvertHttpResDate() (*HttpStructureStandard.HttpResData, error)
+	ConvertHttpResOwn(*HttpStructureStandard.HttpResData) error
 }
 
 // HttpClient http客户端
@@ -25,7 +25,7 @@ type GrpcHttpReq interface {
 	BurpHttpData
 	GetUrl() string
 	GetHttpVersion() string
-	GetHttpReqService() *BurpMorePossibilityApi.HttpReqService
+	GetHttpReqService() *HttpStructureStandard.HttpReqService
 }
 
 // GrpcHttpRes Grpc下响应结构

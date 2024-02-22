@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/kaliwin/Needle/MorePossibilityApi/grpc/BurpMorePossibilityApi"
+	"github.com/kaliwin/Needle/PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -121,7 +122,7 @@ type intruderPayloadProcessor struct {
 }
 
 // IntruderPayloadProcessor 迭代载荷处理器
-func (i intruderPayloadProcessor) IntruderPayloadProcessor(c context.Context, p *BurpMorePossibilityApi.PayloadProcessorData) (*BurpMorePossibilityApi.ByteData, error) {
+func (i intruderPayloadProcessor) IntruderPayloadProcessor(c context.Context, p *BurpMorePossibilityApi.PayloadProcessorData) (*HttpStructureStandard.ByteData, error) {
 	if i.intruderPayloadProcessorServer != nil {
 		return i.intruderPayloadProcessorServer.IntruderPayloadProcessor(c, p)
 
@@ -149,13 +150,13 @@ type httpReqEditBoxAssist struct {
 	httpReqEditBoxAssistServer HttpReqEditBoxAssistServer
 }
 
-func (h httpReqEditBoxAssist) ReqHttpEdit(c context.Context, r *BurpMorePossibilityApi.HttpEditBoxData) (*BurpMorePossibilityApi.ByteData, error) {
+func (h httpReqEditBoxAssist) ReqHttpEdit(c context.Context, r *BurpMorePossibilityApi.HttpEditBoxData) (*HttpStructureStandard.ByteData, error) {
 	if h.httpReqEditBoxAssistServer != nil {
 		return h.httpReqEditBoxAssistServer.ReqHttpEdit(c, r)
 	}
 	return nil, status.Errorf(codes.Unimplemented, "method ReqHttpEdit not implemented")
 }
-func (h httpReqEditBoxAssist) IsReqHttpEditFor(c context.Context, p *BurpMorePossibilityApi.HttpEditBoxData) (*BurpMorePossibilityApi.Boole, error) {
+func (h httpReqEditBoxAssist) IsReqHttpEditFor(c context.Context, p *BurpMorePossibilityApi.HttpEditBoxData) (*HttpStructureStandard.Boole, error) {
 	if h.httpReqEditBoxAssistServer != nil {
 		return h.httpReqEditBoxAssistServer.IsReqHttpEditFor(c, p)
 	}
@@ -168,14 +169,14 @@ type httpResEditBoxAssist struct {
 	httpResEditBoxAssistServer HttpResEditBoxAssistServer
 }
 
-func (h httpResEditBoxAssist) ResHttpEdit(c context.Context, hb *BurpMorePossibilityApi.HttpEditBoxData) (*BurpMorePossibilityApi.ByteData, error) {
+func (h httpResEditBoxAssist) ResHttpEdit(c context.Context, hb *BurpMorePossibilityApi.HttpEditBoxData) (*HttpStructureStandard.ByteData, error) {
 	if h.httpResEditBoxAssistServer != nil {
 		return h.httpResEditBoxAssistServer.ResHttpEdit(c, hb)
 	}
 
 	return nil, status.Errorf(codes.Unimplemented, "method ResHttpEdit not implemented")
 }
-func (h httpResEditBoxAssist) IsResHttpEditFor(c context.Context, hb *BurpMorePossibilityApi.HttpEditBoxData) (*BurpMorePossibilityApi.Boole, error) {
+func (h httpResEditBoxAssist) IsResHttpEditFor(c context.Context, hb *BurpMorePossibilityApi.HttpEditBoxData) (*HttpStructureStandard.Boole, error) {
 	if h.httpResEditBoxAssistServer != nil {
 		return h.httpResEditBoxAssistServer.IsResHttpEditFor(c, hb)
 	}
@@ -189,7 +190,7 @@ type getConTextMenuItems struct {
 }
 
 // GetConTextMenuItems 获取右键菜单
-func (g getConTextMenuItems) GetConTextMenuItems(c context.Context, s *BurpMorePossibilityApi.Str) (*BurpMorePossibilityApi.MenuInfo, error) {
+func (g getConTextMenuItems) GetConTextMenuItems(c context.Context, s *HttpStructureStandard.Str) (*BurpMorePossibilityApi.MenuInfo, error) {
 	if g.getConTextMenuItemsServer != nil {
 		return g.getConTextMenuItemsServer.GetConTextMenuItems(c, s)
 	}
@@ -217,7 +218,7 @@ type proxyRequestHandler struct {
 }
 
 // ProxyHandleRequestReceived 代理请求处理器
-func (p proxyRequestHandler) ProxyHandleRequestReceived(c context.Context, h *BurpMorePossibilityApi.HttpReqGroup) (*BurpMorePossibilityApi.ProxyRequestAction, error) {
+func (p proxyRequestHandler) ProxyHandleRequestReceived(c context.Context, h *HttpStructureStandard.HttpReqGroup) (*BurpMorePossibilityApi.ProxyRequestAction, error) {
 	if p.proxyRequestHandlerServer != nil {
 		return p.proxyRequestHandlerServer.ProxyHandleRequestReceived(c, h)
 	}
@@ -232,7 +233,7 @@ type proxyResponseHandler struct {
 }
 
 // ProxyHandleResponseReceived 代理响应处理器
-func (p proxyResponseHandler) ProxyHandleResponseReceived(c context.Context, hr *BurpMorePossibilityApi.HttpReqAndRes) (*BurpMorePossibilityApi.ProxyResponseAction, error) {
+func (p proxyResponseHandler) ProxyHandleResponseReceived(c context.Context, hr *HttpStructureStandard.HttpReqAndRes) (*BurpMorePossibilityApi.ProxyResponseAction, error) {
 	if p.proxyResponseHandlerServer != nil {
 		return p.proxyResponseHandlerServer.ProxyHandleResponseReceived(c, hr)
 	}

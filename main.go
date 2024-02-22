@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/kaliwin/Needle/MorePossibilityApi/grpc/BurpMorePossibilityApi"
+	"github.com/kaliwin/Needle/PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard"
 	http2 "github.com/kaliwin/Needle/network/http"
 	"io"
 	"log"
@@ -21,19 +22,19 @@ type test struct {
 }
 
 // IntruderPayloadProcessor burp迭代载荷处理器
-func (t test) IntruderPayloadProcessor(ctx context.Context, data *BurpMorePossibilityApi.PayloadProcessorData) (*BurpMorePossibilityApi.ByteData, error) {
+func (t test) IntruderPayloadProcessor(ctx context.Context, data *BurpMorePossibilityApi.PayloadProcessorData) (*HttpStructureStandard.ByteData, error) {
 
 	phone := string(data.GetPayload())
 
 	resp, err := http.Get("http://127.0.0.1:5612/business-demo/invoke?group=test&action=encrypt&phone=" + phone)
 	if err != nil {
 		log.Println(err)
-		return &BurpMorePossibilityApi.ByteData{ByteData: data.GetPayload()}, nil
+		return &HttpStructureStandard.ByteData{ByteData: data.GetPayload()}, nil
 	}
 	d, _ := io.ReadAll(resp.Body)
 	tc := Tc{}
 	json.Unmarshal(d, &tc)
-	return &BurpMorePossibilityApi.ByteData{ByteData: []byte(tc.Data)}, nil
+	return &HttpStructureStandard.ByteData{ByteData: []byte(tc.Data)}, nil
 }
 
 func main() {

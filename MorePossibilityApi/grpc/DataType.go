@@ -1,13 +1,15 @@
 package grpc
 
-import "github.com/kaliwin/Needle/MorePossibilityApi/grpc/BurpMorePossibilityApi"
+import (
+	"github.com/kaliwin/Needle/PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard"
+)
 
 // GrpcHttpRequestData grpc http请求数据结构
 type GrpcHttpRequestData struct {
-	*BurpMorePossibilityApi.HttpReqData
+	*HttpStructureStandard.HttpReqData
 }
 
 // GrpcHttpResponseData grpc http响应数据结构
 type GrpcHttpResponseData struct {
-	*BurpMorePossibilityApi.HttpResData
+	*HttpStructureStandard.HttpResData
 }

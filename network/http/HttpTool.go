@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/kaliwin/Needle/MorePossibilityApi/grpc/BurpMorePossibilityApi"
+	"github.com/kaliwin/Needle/PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard"
 	"io"
 	"net/http"
 	"net/url"
@@ -384,7 +384,7 @@ func (r *RefactorStandardHttpRes) SetResBody(body []byte) {
 }
 
 // BuildGrpcRes 构建Grpc的响应类型
-func (r *RefactorStandardHttpRes) BuildGrpcRes() (*BurpMorePossibilityApi.HttpResData, error) {
+func (r *RefactorStandardHttpRes) BuildGrpcRes() (*HttpStructureStandard.HttpResData, error) {
 	r.resHead.Set(ContentLength, strconv.Itoa(len(r.resBody)))                                        // 设置ContentLength 长度
 	up := []byte(r.httpVersion + " " + strconv.Itoa(int(r.statusCode)) + " " + r.codeString + "\r\n") // 头行
 	ww := writeToData{Data: make([]byte, 0)}
@@ -396,7 +396,7 @@ func (r *RefactorStandardHttpRes) BuildGrpcRes() (*BurpMorePossibilityApi.HttpRe
 	up = append(up, ww.Data...)
 	up = append(up, []byte("\r\n")...)
 	up = append(up, r.resBody...)
-	return &BurpMorePossibilityApi.HttpResData{
+	return &HttpStructureStandard.HttpResData{
 		Data:        up,
 		StatusCode:  r.statusCode,
 		BodyIndex:   int64(len(up) - len(r.resBody)),
@@ -414,20 +414,20 @@ func (r *RefactorStandardHttpRes) BuildResponse() (*http.Response, error) {
 }
 
 // BuildHttpReqAndRes 构建http请求和响应
-func (r *RefactorStandardHttpRes) BuildHttpReqAndRes() (*BurpMorePossibilityApi.HttpReqAndRes, error) {
+func (r *RefactorStandardHttpRes) BuildHttpReqAndRes() (*HttpStructureStandard.HttpReqAndRes, error) {
 	req, err := r.standardHttpReq.BuildReqData()
 	res, err := r.BuildGrpcRes()
 	if err != nil {
 		return nil, err
 	}
-	return &BurpMorePossibilityApi.HttpReqAndRes{
+	return &HttpStructureStandard.HttpReqAndRes{
 		Req: req,
 		Res: res,
 	}, nil
 }
 
 // ConvertHttpResOwn 转换为自身响应
-func (r *RefactorStandardHttpRes) ConvertHttpResOwn(res *BurpMorePossibilityApi.HttpResData, req *RefactorStandardHttpReq) error {
+func (r *RefactorStandardHttpRes) ConvertHttpResOwn(res *HttpStructureStandard.HttpResData, req *RefactorStandardHttpReq) error {
 
 	response, err := BuildResponse(res)
 	if err != nil {
@@ -479,11 +479,11 @@ func (r *RefactorStandardHttpRes) ConvertHttpResponseOwn(response *http.Response
 
 // RefactorStandardHttpReq 重构标准请求
 type RefactorStandardHttpReq struct {
-	httpReqService *BurpMorePossibilityApi.HttpReqService // 目标信息
-	httpVersion    string                                 // http版本
-	request        *http.Request                          // 请求
-	body           []byte                                 // 体
-	client         HttpClient                             // 客户端
+	httpReqService *HttpStructureStandard.HttpReqService // 目标信息
+	httpVersion    string                                // http版本
+	request        *http.Request                         // 请求
+	body           []byte                                // 体
+	client         HttpClient                            // 客户端
 }
 
 // SetClient 设置客户端
@@ -508,7 +508,7 @@ func (r *RefactorStandardHttpReq) GetRawPath() string {
 }
 
 // GetTarGetPath 获取目标地址
-func (r *RefactorStandardHttpReq) GetTarGetPath() *BurpMorePossibilityApi.HttpReqService {
+func (r *RefactorStandardHttpReq) GetTarGetPath() *HttpStructureStandard.HttpReqService {
 	return r.httpReqService
 }
 
@@ -533,7 +533,7 @@ func (r *RefactorStandardHttpReq) GetMethod() string {
 }
 
 // SetTarGetPath 设置目标地址
-func (r *RefactorStandardHttpReq) SetTarGetPath(tarGet *BurpMorePossibilityApi.HttpReqService) {
+func (r *RefactorStandardHttpReq) SetTarGetPath(tarGet *HttpStructureStandard.HttpReqService) {
 	//r.request.URL.
 	r.request.URL.Host = fmt.Sprintf("%s:%d", tarGet.GetIp(), tarGet.GetPort())
 	if tarGet.GetSecure() {
@@ -632,7 +632,7 @@ func (r *RefactorStandardHttpReq) ConvertHttpRequestOwn(req *http.Request) error
 }
 
 // BuildReqData 构建Grpc的请求类型
-func (r *RefactorStandardHttpReq) BuildReqData() (*BurpMorePossibilityApi.HttpReqData, error) {
+func (r *RefactorStandardHttpReq) BuildReqData() (*HttpStructureStandard.HttpReqData, error) {
 	r.request.Header.Set(ContentLength, strconv.Itoa(len(r.body))) // 设置ContentLength 长度
 	r.request.ContentLength = int64(len(r.body))
 	up := []byte(r.request.Method + " " + UrlToRawPath(r.request.URL) + " " + HTTP1 + "\r\n")
@@ -645,7 +645,7 @@ func (r *RefactorStandardHttpReq) BuildReqData() (*BurpMorePossibilityApi.HttpRe
 	up = append(up, ww.Data...)
 	up = append(up, []byte("\r\n")...)
 	up = append(up, r.body...)
-	return &BurpMorePossibilityApi.HttpReqData{
+	return &HttpStructureStandard.HttpReqData{
 		Data:           up,
 		Url:            r.request.URL.String(),
 		BodyIndex:      int64(len(up) - len(r.body)), // 体开始下标
@@ -673,7 +673,7 @@ func (r *RefactorStandardHttpReq) Send() (standardHttpRes RefactorStandardHttpRe
 }
 
 // BuildRefactorStandardHttpRes	构建重构标准响应 用BurpApi.HttpResData 构建
-func BuildRefactorStandardHttpRes(res *BurpMorePossibilityApi.HttpResData, req *RefactorStandardHttpReq) (RefactorStandardHttpRes, error) {
+func BuildRefactorStandardHttpRes(res *HttpStructureStandard.HttpResData, req *RefactorStandardHttpReq) (RefactorStandardHttpRes, error) {
 	httpRes := RefactorStandardHttpRes{}
 	err := httpRes.ConvertHttpResOwn(res, req)
 	if err != nil {
@@ -693,7 +693,7 @@ func BuildRefactorStandardHttpResponse(res *http.Response, req *RefactorStandard
 }
 
 // BuildRefactorStandardHttpReq 构建转换为自身请求
-func BuildRefactorStandardHttpReq(req *BurpMorePossibilityApi.HttpReqData, client HttpClient) (RefactorStandardHttpReq, error) {
+func BuildRefactorStandardHttpReq(req *HttpStructureStandard.HttpReqData, client HttpClient) (RefactorStandardHttpReq, error) {
 	httpReq := RefactorStandardHttpReq{}
 	httpReq.SetClient(client)
 	return httpReq, httpReq.ConvertHttpReqOwn(req)
@@ -710,7 +710,7 @@ func BuildResponse(res GrpcHttpRes) (*http.Response, error) {
 }
 
 // BuildGrpcRequest 构建Grpc请求实例  <===== 等待测试 =====>
-func BuildGrpcRequest(req *http.Request) (*BurpMorePossibilityApi.HttpReqData, error) {
+func BuildGrpcRequest(req *http.Request) (*HttpStructureStandard.HttpReqData, error) {
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		body = []byte{}
@@ -737,12 +737,12 @@ func BuildGrpcRequest(req *http.Request) (*BurpMorePossibilityApi.HttpReqData, e
 	if strings.Contains(req.URL.Scheme, "s") {
 		Secure = true
 	}
-	return &BurpMorePossibilityApi.HttpReqData{
+	return &HttpStructureStandard.HttpReqData{
 		Data:        up,
 		Url:         req.URL.String(),
 		BodyIndex:   int64(len(up) - len(body)), // 体开始下标
 		HttpVersion: req.Proto,
-		HttpReqService: &BurpMorePossibilityApi.HttpReqService{
+		HttpReqService: &HttpStructureStandard.HttpReqService{
 			Ip:     req.URL.Hostname(),
 			Port:   int32(atoi),
 			Secure: Secure,
@@ -758,7 +758,7 @@ func BuildRefactorStandardHttpRequest(req *http.Request, client HttpClient) (Ref
 }
 
 // BuildStandardHttpGroup 构建标准http组
-func BuildStandardHttpGroup(httpGroup *BurpMorePossibilityApi.HttpReqAndRes, client HttpClient) (HttpStandardGroup, error) {
+func BuildStandardHttpGroup(httpGroup *HttpStructureStandard.HttpReqAndRes, client HttpClient) (HttpStandardGroup, error) {
 	group := HttpStandardGroup{}
 	req := httpGroup.GetReq()
 	own, err := BuildRefactorStandardHttpReq(req, client)

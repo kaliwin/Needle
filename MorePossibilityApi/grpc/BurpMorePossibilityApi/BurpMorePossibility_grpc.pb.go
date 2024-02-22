@@ -6,14 +6,13 @@
 // - protoc             v4.25.1
 // source: BurpMorePossibility.proto
 
-//import "google/api/annotations.proto";
-
 //包名 服务名称 用于http2路由
 
 package BurpMorePossibilityApi
 
 import (
 	context "context"
+	HttpStructureStandard "github.com/kaliwin/Needle/PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -37,14 +36,14 @@ const (
 type BurpServerClient interface {
 	// 注册实时流量传输
 	// burp将监听端口通过服务端端流进行实时流量镜像
-	RegisterRealTimeTrafficMirroring(ctx context.Context, in *Str, opts ...grpc.CallOption) (BurpServer_RegisterRealTimeTrafficMirroringClient, error)
+	RegisterRealTimeTrafficMirroring(ctx context.Context, in *HttpStructureStandard.Str, opts ...grpc.CallOption) (BurpServer_RegisterRealTimeTrafficMirroringClient, error)
 	// 服务注册列表 包含多个服务  多个服务其中有一个注册失败不会影响到已经成功的 只要有一个失败便会返回false
-	RegisterServerList(ctx context.Context, in *ServiceRegisterRoutingList, opts ...grpc.CallOption) (*ProcessingStatus, error)
+	RegisterServerList(ctx context.Context, in *ServiceRegisterRoutingList, opts ...grpc.CallOption) (*HttpStructureStandard.ProcessingStatus, error)
 	// 获取代理历史请求 由于过滤会很复杂因此直接返回所有历史数据 入参为只占位符不用理睬
 	// 由于数据过大默认单个消息最大为500MB 客户端也需要处理 后续将提供分块传输 过滤提取等方式
 	// 修改为服务端流的方式进行流量传输
-	GetProxyHistory(ctx context.Context, in *Str, opts ...grpc.CallOption) (BurpServer_GetProxyHistoryClient, error)
-	ReportIssue(ctx context.Context, in *AuditIssue, opts ...grpc.CallOption) (*ProcessingStatus, error)
+	GetProxyHistory(ctx context.Context, in *HttpStructureStandard.Str, opts ...grpc.CallOption) (BurpServer_GetProxyHistoryClient, error)
+	ReportIssue(ctx context.Context, in *HttpStructureStandard.AuditIssue, opts ...grpc.CallOption) (*HttpStructureStandard.ProcessingStatus, error)
 }
 
 type burpServerClient struct {
@@ -55,7 +54,7 @@ func NewBurpServerClient(cc grpc.ClientConnInterface) BurpServerClient {
 	return &burpServerClient{cc}
 }
 
-func (c *burpServerClient) RegisterRealTimeTrafficMirroring(ctx context.Context, in *Str, opts ...grpc.CallOption) (BurpServer_RegisterRealTimeTrafficMirroringClient, error) {
+func (c *burpServerClient) RegisterRealTimeTrafficMirroring(ctx context.Context, in *HttpStructureStandard.Str, opts ...grpc.CallOption) (BurpServer_RegisterRealTimeTrafficMirroringClient, error) {
 	stream, err := c.cc.NewStream(ctx, &BurpServer_ServiceDesc.Streams[0], BurpServer_RegisterRealTimeTrafficMirroring_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
@@ -71,7 +70,7 @@ func (c *burpServerClient) RegisterRealTimeTrafficMirroring(ctx context.Context,
 }
 
 type BurpServer_RegisterRealTimeTrafficMirroringClient interface {
-	Recv() (*HttpReqAndRes, error)
+	Recv() (*HttpStructureStandard.HttpReqAndRes, error)
 	grpc.ClientStream
 }
 
@@ -79,16 +78,16 @@ type burpServerRegisterRealTimeTrafficMirroringClient struct {
 	grpc.ClientStream
 }
 
-func (x *burpServerRegisterRealTimeTrafficMirroringClient) Recv() (*HttpReqAndRes, error) {
-	m := new(HttpReqAndRes)
+func (x *burpServerRegisterRealTimeTrafficMirroringClient) Recv() (*HttpStructureStandard.HttpReqAndRes, error) {
+	m := new(HttpStructureStandard.HttpReqAndRes)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *burpServerClient) RegisterServerList(ctx context.Context, in *ServiceRegisterRoutingList, opts ...grpc.CallOption) (*ProcessingStatus, error) {
-	out := new(ProcessingStatus)
+func (c *burpServerClient) RegisterServerList(ctx context.Context, in *ServiceRegisterRoutingList, opts ...grpc.CallOption) (*HttpStructureStandard.ProcessingStatus, error) {
+	out := new(HttpStructureStandard.ProcessingStatus)
 	err := c.cc.Invoke(ctx, BurpServer_RegisterServerList_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -96,7 +95,7 @@ func (c *burpServerClient) RegisterServerList(ctx context.Context, in *ServiceRe
 	return out, nil
 }
 
-func (c *burpServerClient) GetProxyHistory(ctx context.Context, in *Str, opts ...grpc.CallOption) (BurpServer_GetProxyHistoryClient, error) {
+func (c *burpServerClient) GetProxyHistory(ctx context.Context, in *HttpStructureStandard.Str, opts ...grpc.CallOption) (BurpServer_GetProxyHistoryClient, error) {
 	stream, err := c.cc.NewStream(ctx, &BurpServer_ServiceDesc.Streams[1], BurpServer_GetProxyHistory_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
@@ -112,7 +111,7 @@ func (c *burpServerClient) GetProxyHistory(ctx context.Context, in *Str, opts ..
 }
 
 type BurpServer_GetProxyHistoryClient interface {
-	Recv() (*HttpReqAndRes, error)
+	Recv() (*HttpStructureStandard.HttpReqAndRes, error)
 	grpc.ClientStream
 }
 
@@ -120,16 +119,16 @@ type burpServerGetProxyHistoryClient struct {
 	grpc.ClientStream
 }
 
-func (x *burpServerGetProxyHistoryClient) Recv() (*HttpReqAndRes, error) {
-	m := new(HttpReqAndRes)
+func (x *burpServerGetProxyHistoryClient) Recv() (*HttpStructureStandard.HttpReqAndRes, error) {
+	m := new(HttpStructureStandard.HttpReqAndRes)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *burpServerClient) ReportIssue(ctx context.Context, in *AuditIssue, opts ...grpc.CallOption) (*ProcessingStatus, error) {
-	out := new(ProcessingStatus)
+func (c *burpServerClient) ReportIssue(ctx context.Context, in *HttpStructureStandard.AuditIssue, opts ...grpc.CallOption) (*HttpStructureStandard.ProcessingStatus, error) {
+	out := new(HttpStructureStandard.ProcessingStatus)
 	err := c.cc.Invoke(ctx, BurpServer_ReportIssue_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -143,14 +142,14 @@ func (c *burpServerClient) ReportIssue(ctx context.Context, in *AuditIssue, opts
 type BurpServerServer interface {
 	// 注册实时流量传输
 	// burp将监听端口通过服务端端流进行实时流量镜像
-	RegisterRealTimeTrafficMirroring(*Str, BurpServer_RegisterRealTimeTrafficMirroringServer) error
+	RegisterRealTimeTrafficMirroring(*HttpStructureStandard.Str, BurpServer_RegisterRealTimeTrafficMirroringServer) error
 	// 服务注册列表 包含多个服务  多个服务其中有一个注册失败不会影响到已经成功的 只要有一个失败便会返回false
-	RegisterServerList(context.Context, *ServiceRegisterRoutingList) (*ProcessingStatus, error)
+	RegisterServerList(context.Context, *ServiceRegisterRoutingList) (*HttpStructureStandard.ProcessingStatus, error)
 	// 获取代理历史请求 由于过滤会很复杂因此直接返回所有历史数据 入参为只占位符不用理睬
 	// 由于数据过大默认单个消息最大为500MB 客户端也需要处理 后续将提供分块传输 过滤提取等方式
 	// 修改为服务端流的方式进行流量传输
-	GetProxyHistory(*Str, BurpServer_GetProxyHistoryServer) error
-	ReportIssue(context.Context, *AuditIssue) (*ProcessingStatus, error)
+	GetProxyHistory(*HttpStructureStandard.Str, BurpServer_GetProxyHistoryServer) error
+	ReportIssue(context.Context, *HttpStructureStandard.AuditIssue) (*HttpStructureStandard.ProcessingStatus, error)
 	mustEmbedUnimplementedBurpServerServer()
 }
 
@@ -158,16 +157,16 @@ type BurpServerServer interface {
 type UnimplementedBurpServerServer struct {
 }
 
-func (UnimplementedBurpServerServer) RegisterRealTimeTrafficMirroring(*Str, BurpServer_RegisterRealTimeTrafficMirroringServer) error {
+func (UnimplementedBurpServerServer) RegisterRealTimeTrafficMirroring(*HttpStructureStandard.Str, BurpServer_RegisterRealTimeTrafficMirroringServer) error {
 	return status.Errorf(codes.Unimplemented, "method RegisterRealTimeTrafficMirroring not implemented")
 }
-func (UnimplementedBurpServerServer) RegisterServerList(context.Context, *ServiceRegisterRoutingList) (*ProcessingStatus, error) {
+func (UnimplementedBurpServerServer) RegisterServerList(context.Context, *ServiceRegisterRoutingList) (*HttpStructureStandard.ProcessingStatus, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterServerList not implemented")
 }
-func (UnimplementedBurpServerServer) GetProxyHistory(*Str, BurpServer_GetProxyHistoryServer) error {
+func (UnimplementedBurpServerServer) GetProxyHistory(*HttpStructureStandard.Str, BurpServer_GetProxyHistoryServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetProxyHistory not implemented")
 }
-func (UnimplementedBurpServerServer) ReportIssue(context.Context, *AuditIssue) (*ProcessingStatus, error) {
+func (UnimplementedBurpServerServer) ReportIssue(context.Context, *HttpStructureStandard.AuditIssue) (*HttpStructureStandard.ProcessingStatus, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReportIssue not implemented")
 }
 func (UnimplementedBurpServerServer) mustEmbedUnimplementedBurpServerServer() {}
@@ -184,7 +183,7 @@ func RegisterBurpServerServer(s grpc.ServiceRegistrar, srv BurpServerServer) {
 }
 
 func _BurpServer_RegisterRealTimeTrafficMirroring_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(Str)
+	m := new(HttpStructureStandard.Str)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -192,7 +191,7 @@ func _BurpServer_RegisterRealTimeTrafficMirroring_Handler(srv interface{}, strea
 }
 
 type BurpServer_RegisterRealTimeTrafficMirroringServer interface {
-	Send(*HttpReqAndRes) error
+	Send(*HttpStructureStandard.HttpReqAndRes) error
 	grpc.ServerStream
 }
 
@@ -200,7 +199,7 @@ type burpServerRegisterRealTimeTrafficMirroringServer struct {
 	grpc.ServerStream
 }
 
-func (x *burpServerRegisterRealTimeTrafficMirroringServer) Send(m *HttpReqAndRes) error {
+func (x *burpServerRegisterRealTimeTrafficMirroringServer) Send(m *HttpStructureStandard.HttpReqAndRes) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -223,7 +222,7 @@ func _BurpServer_RegisterServerList_Handler(srv interface{}, ctx context.Context
 }
 
 func _BurpServer_GetProxyHistory_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(Str)
+	m := new(HttpStructureStandard.Str)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -231,7 +230,7 @@ func _BurpServer_GetProxyHistory_Handler(srv interface{}, stream grpc.ServerStre
 }
 
 type BurpServer_GetProxyHistoryServer interface {
-	Send(*HttpReqAndRes) error
+	Send(*HttpStructureStandard.HttpReqAndRes) error
 	grpc.ServerStream
 }
 
@@ -239,12 +238,12 @@ type burpServerGetProxyHistoryServer struct {
 	grpc.ServerStream
 }
 
-func (x *burpServerGetProxyHistoryServer) Send(m *HttpReqAndRes) error {
+func (x *burpServerGetProxyHistoryServer) Send(m *HttpStructureStandard.HttpReqAndRes) error {
 	return x.ServerStream.SendMsg(m)
 }
 
 func _BurpServer_ReportIssue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuditIssue)
+	in := new(HttpStructureStandard.AuditIssue)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -256,7 +255,7 @@ func _BurpServer_ReportIssue_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: BurpServer_ReportIssue_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BurpServerServer).ReportIssue(ctx, req.(*AuditIssue))
+		return srv.(BurpServerServer).ReportIssue(ctx, req.(*HttpStructureStandard.AuditIssue))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -323,8 +322,8 @@ func (c *realTimeTrafficMirroringClient) RealTimeTrafficMirroring(ctx context.Co
 }
 
 type RealTimeTrafficMirroring_RealTimeTrafficMirroringClient interface {
-	Send(*HttpReqAndRes) error
-	CloseAndRecv() (*Str, error)
+	Send(*HttpStructureStandard.HttpReqAndRes) error
+	CloseAndRecv() (*HttpStructureStandard.Str, error)
 	grpc.ClientStream
 }
 
@@ -332,15 +331,15 @@ type realTimeTrafficMirroringRealTimeTrafficMirroringClient struct {
 	grpc.ClientStream
 }
 
-func (x *realTimeTrafficMirroringRealTimeTrafficMirroringClient) Send(m *HttpReqAndRes) error {
+func (x *realTimeTrafficMirroringRealTimeTrafficMirroringClient) Send(m *HttpStructureStandard.HttpReqAndRes) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *realTimeTrafficMirroringRealTimeTrafficMirroringClient) CloseAndRecv() (*Str, error) {
+func (x *realTimeTrafficMirroringRealTimeTrafficMirroringClient) CloseAndRecv() (*HttpStructureStandard.Str, error) {
 	if err := x.ClientStream.CloseSend(); err != nil {
 		return nil, err
 	}
-	m := new(Str)
+	m := new(HttpStructureStandard.Str)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -383,8 +382,8 @@ func _RealTimeTrafficMirroring_RealTimeTrafficMirroring_Handler(srv interface{},
 }
 
 type RealTimeTrafficMirroring_RealTimeTrafficMirroringServer interface {
-	SendAndClose(*Str) error
-	Recv() (*HttpReqAndRes, error)
+	SendAndClose(*HttpStructureStandard.Str) error
+	Recv() (*HttpStructureStandard.HttpReqAndRes, error)
 	grpc.ServerStream
 }
 
@@ -392,12 +391,12 @@ type realTimeTrafficMirroringRealTimeTrafficMirroringServer struct {
 	grpc.ServerStream
 }
 
-func (x *realTimeTrafficMirroringRealTimeTrafficMirroringServer) SendAndClose(m *Str) error {
+func (x *realTimeTrafficMirroringRealTimeTrafficMirroringServer) SendAndClose(m *HttpStructureStandard.Str) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *realTimeTrafficMirroringRealTimeTrafficMirroringServer) Recv() (*HttpReqAndRes, error) {
-	m := new(HttpReqAndRes)
+func (x *realTimeTrafficMirroringRealTimeTrafficMirroringServer) Recv() (*HttpStructureStandard.HttpReqAndRes, error) {
+	m := new(HttpStructureStandard.HttpReqAndRes)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -429,7 +428,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RegisterServerRoutingListClient interface {
-	RegisterServerList(ctx context.Context, in *Str, opts ...grpc.CallOption) (*ServiceRegisterRoutingList, error)
+	RegisterServerList(ctx context.Context, in *HttpStructureStandard.Str, opts ...grpc.CallOption) (*ServiceRegisterRoutingList, error)
 }
 
 type registerServerRoutingListClient struct {
@@ -440,7 +439,7 @@ func NewRegisterServerRoutingListClient(cc grpc.ClientConnInterface) RegisterSer
 	return &registerServerRoutingListClient{cc}
 }
 
-func (c *registerServerRoutingListClient) RegisterServerList(ctx context.Context, in *Str, opts ...grpc.CallOption) (*ServiceRegisterRoutingList, error) {
+func (c *registerServerRoutingListClient) RegisterServerList(ctx context.Context, in *HttpStructureStandard.Str, opts ...grpc.CallOption) (*ServiceRegisterRoutingList, error) {
 	out := new(ServiceRegisterRoutingList)
 	err := c.cc.Invoke(ctx, RegisterServerRoutingList_RegisterServerList_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -453,7 +452,7 @@ func (c *registerServerRoutingListClient) RegisterServerList(ctx context.Context
 // All implementations must embed UnimplementedRegisterServerRoutingListServer
 // for forward compatibility
 type RegisterServerRoutingListServer interface {
-	RegisterServerList(context.Context, *Str) (*ServiceRegisterRoutingList, error)
+	RegisterServerList(context.Context, *HttpStructureStandard.Str) (*ServiceRegisterRoutingList, error)
 	mustEmbedUnimplementedRegisterServerRoutingListServer()
 }
 
@@ -461,7 +460,7 @@ type RegisterServerRoutingListServer interface {
 type UnimplementedRegisterServerRoutingListServer struct {
 }
 
-func (UnimplementedRegisterServerRoutingListServer) RegisterServerList(context.Context, *Str) (*ServiceRegisterRoutingList, error) {
+func (UnimplementedRegisterServerRoutingListServer) RegisterServerList(context.Context, *HttpStructureStandard.Str) (*ServiceRegisterRoutingList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterServerList not implemented")
 }
 func (UnimplementedRegisterServerRoutingListServer) mustEmbedUnimplementedRegisterServerRoutingListServer() {
@@ -479,7 +478,7 @@ func RegisterRegisterServerRoutingListServer(s grpc.ServiceRegistrar, srv Regist
 }
 
 func _RegisterServerRoutingList_RegisterServerList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Str)
+	in := new(HttpStructureStandard.Str)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -491,7 +490,7 @@ func _RegisterServerRoutingList_RegisterServerList_Handler(srv interface{}, ctx 
 		FullMethod: RegisterServerRoutingList_RegisterServerList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegisterServerRoutingListServer).RegisterServerList(ctx, req.(*Str))
+		return srv.(RegisterServerRoutingListServer).RegisterServerList(ctx, req.(*HttpStructureStandard.Str))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -522,8 +521,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ScoutServerClient interface {
 	// 添加http编辑器加解密键值对 参数为http编辑组件名称以及key、value
-	AddHttpEditorEncryptAndDecryptKeyValue(ctx context.Context, in *HttpEditorKeyValue, opts ...grpc.CallOption) (*ProcessingStatus, error)
-	AddHttpKeyValuePair(ctx context.Context, in *HttpKeyValuePair, opts ...grpc.CallOption) (*Boole, error)
+	AddHttpEditorEncryptAndDecryptKeyValue(ctx context.Context, in *HttpEditorKeyValue, opts ...grpc.CallOption) (*HttpStructureStandard.ProcessingStatus, error)
+	AddHttpKeyValuePair(ctx context.Context, in *HttpKeyValuePair, opts ...grpc.CallOption) (*HttpStructureStandard.Boole, error)
 }
 
 type scoutServerClient struct {
@@ -534,8 +533,8 @@ func NewScoutServerClient(cc grpc.ClientConnInterface) ScoutServerClient {
 	return &scoutServerClient{cc}
 }
 
-func (c *scoutServerClient) AddHttpEditorEncryptAndDecryptKeyValue(ctx context.Context, in *HttpEditorKeyValue, opts ...grpc.CallOption) (*ProcessingStatus, error) {
-	out := new(ProcessingStatus)
+func (c *scoutServerClient) AddHttpEditorEncryptAndDecryptKeyValue(ctx context.Context, in *HttpEditorKeyValue, opts ...grpc.CallOption) (*HttpStructureStandard.ProcessingStatus, error) {
+	out := new(HttpStructureStandard.ProcessingStatus)
 	err := c.cc.Invoke(ctx, ScoutServer_AddHttpEditorEncryptAndDecryptKeyValue_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -543,8 +542,8 @@ func (c *scoutServerClient) AddHttpEditorEncryptAndDecryptKeyValue(ctx context.C
 	return out, nil
 }
 
-func (c *scoutServerClient) AddHttpKeyValuePair(ctx context.Context, in *HttpKeyValuePair, opts ...grpc.CallOption) (*Boole, error) {
-	out := new(Boole)
+func (c *scoutServerClient) AddHttpKeyValuePair(ctx context.Context, in *HttpKeyValuePair, opts ...grpc.CallOption) (*HttpStructureStandard.Boole, error) {
+	out := new(HttpStructureStandard.Boole)
 	err := c.cc.Invoke(ctx, ScoutServer_AddHttpKeyValuePair_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -557,8 +556,8 @@ func (c *scoutServerClient) AddHttpKeyValuePair(ctx context.Context, in *HttpKey
 // for forward compatibility
 type ScoutServerServer interface {
 	// 添加http编辑器加解密键值对 参数为http编辑组件名称以及key、value
-	AddHttpEditorEncryptAndDecryptKeyValue(context.Context, *HttpEditorKeyValue) (*ProcessingStatus, error)
-	AddHttpKeyValuePair(context.Context, *HttpKeyValuePair) (*Boole, error)
+	AddHttpEditorEncryptAndDecryptKeyValue(context.Context, *HttpEditorKeyValue) (*HttpStructureStandard.ProcessingStatus, error)
+	AddHttpKeyValuePair(context.Context, *HttpKeyValuePair) (*HttpStructureStandard.Boole, error)
 	mustEmbedUnimplementedScoutServerServer()
 }
 
@@ -566,10 +565,10 @@ type ScoutServerServer interface {
 type UnimplementedScoutServerServer struct {
 }
 
-func (UnimplementedScoutServerServer) AddHttpEditorEncryptAndDecryptKeyValue(context.Context, *HttpEditorKeyValue) (*ProcessingStatus, error) {
+func (UnimplementedScoutServerServer) AddHttpEditorEncryptAndDecryptKeyValue(context.Context, *HttpEditorKeyValue) (*HttpStructureStandard.ProcessingStatus, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddHttpEditorEncryptAndDecryptKeyValue not implemented")
 }
-func (UnimplementedScoutServerServer) AddHttpKeyValuePair(context.Context, *HttpKeyValuePair) (*Boole, error) {
+func (UnimplementedScoutServerServer) AddHttpKeyValuePair(context.Context, *HttpKeyValuePair) (*HttpStructureStandard.Boole, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddHttpKeyValuePair not implemented")
 }
 func (UnimplementedScoutServerServer) mustEmbedUnimplementedScoutServerServer() {}
@@ -650,7 +649,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type IntruderPayloadProcessorServerClient interface {
 	// 迭代器载荷处理
-	IntruderPayloadProcessor(ctx context.Context, in *PayloadProcessorData, opts ...grpc.CallOption) (*ByteData, error)
+	IntruderPayloadProcessor(ctx context.Context, in *PayloadProcessorData, opts ...grpc.CallOption) (*HttpStructureStandard.ByteData, error)
 }
 
 type intruderPayloadProcessorServerClient struct {
@@ -661,8 +660,8 @@ func NewIntruderPayloadProcessorServerClient(cc grpc.ClientConnInterface) Intrud
 	return &intruderPayloadProcessorServerClient{cc}
 }
 
-func (c *intruderPayloadProcessorServerClient) IntruderPayloadProcessor(ctx context.Context, in *PayloadProcessorData, opts ...grpc.CallOption) (*ByteData, error) {
-	out := new(ByteData)
+func (c *intruderPayloadProcessorServerClient) IntruderPayloadProcessor(ctx context.Context, in *PayloadProcessorData, opts ...grpc.CallOption) (*HttpStructureStandard.ByteData, error) {
+	out := new(HttpStructureStandard.ByteData)
 	err := c.cc.Invoke(ctx, IntruderPayloadProcessorServer_IntruderPayloadProcessor_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -675,7 +674,7 @@ func (c *intruderPayloadProcessorServerClient) IntruderPayloadProcessor(ctx cont
 // for forward compatibility
 type IntruderPayloadProcessorServerServer interface {
 	// 迭代器载荷处理
-	IntruderPayloadProcessor(context.Context, *PayloadProcessorData) (*ByteData, error)
+	IntruderPayloadProcessor(context.Context, *PayloadProcessorData) (*HttpStructureStandard.ByteData, error)
 	mustEmbedUnimplementedIntruderPayloadProcessorServerServer()
 }
 
@@ -683,7 +682,7 @@ type IntruderPayloadProcessorServerServer interface {
 type UnimplementedIntruderPayloadProcessorServerServer struct {
 }
 
-func (UnimplementedIntruderPayloadProcessorServerServer) IntruderPayloadProcessor(context.Context, *PayloadProcessorData) (*ByteData, error) {
+func (UnimplementedIntruderPayloadProcessorServerServer) IntruderPayloadProcessor(context.Context, *PayloadProcessorData) (*HttpStructureStandard.ByteData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IntruderPayloadProcessor not implemented")
 }
 func (UnimplementedIntruderPayloadProcessorServerServer) mustEmbedUnimplementedIntruderPayloadProcessorServerServer() {
@@ -836,8 +835,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HttpReqEditBoxAssistClient interface {
-	ReqHttpEdit(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*ByteData, error)
-	IsReqHttpEditFor(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*Boole, error)
+	ReqHttpEdit(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*HttpStructureStandard.ByteData, error)
+	IsReqHttpEditFor(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*HttpStructureStandard.Boole, error)
 }
 
 type httpReqEditBoxAssistClient struct {
@@ -848,8 +847,8 @@ func NewHttpReqEditBoxAssistClient(cc grpc.ClientConnInterface) HttpReqEditBoxAs
 	return &httpReqEditBoxAssistClient{cc}
 }
 
-func (c *httpReqEditBoxAssistClient) ReqHttpEdit(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*ByteData, error) {
-	out := new(ByteData)
+func (c *httpReqEditBoxAssistClient) ReqHttpEdit(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*HttpStructureStandard.ByteData, error) {
+	out := new(HttpStructureStandard.ByteData)
 	err := c.cc.Invoke(ctx, HttpReqEditBoxAssist_ReqHttpEdit_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -857,8 +856,8 @@ func (c *httpReqEditBoxAssistClient) ReqHttpEdit(ctx context.Context, in *HttpEd
 	return out, nil
 }
 
-func (c *httpReqEditBoxAssistClient) IsReqHttpEditFor(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*Boole, error) {
-	out := new(Boole)
+func (c *httpReqEditBoxAssistClient) IsReqHttpEditFor(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*HttpStructureStandard.Boole, error) {
+	out := new(HttpStructureStandard.Boole)
 	err := c.cc.Invoke(ctx, HttpReqEditBoxAssist_IsReqHttpEditFor_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -870,8 +869,8 @@ func (c *httpReqEditBoxAssistClient) IsReqHttpEditFor(ctx context.Context, in *H
 // All implementations must embed UnimplementedHttpReqEditBoxAssistServer
 // for forward compatibility
 type HttpReqEditBoxAssistServer interface {
-	ReqHttpEdit(context.Context, *HttpEditBoxData) (*ByteData, error)
-	IsReqHttpEditFor(context.Context, *HttpEditBoxData) (*Boole, error)
+	ReqHttpEdit(context.Context, *HttpEditBoxData) (*HttpStructureStandard.ByteData, error)
+	IsReqHttpEditFor(context.Context, *HttpEditBoxData) (*HttpStructureStandard.Boole, error)
 	mustEmbedUnimplementedHttpReqEditBoxAssistServer()
 }
 
@@ -879,10 +878,10 @@ type HttpReqEditBoxAssistServer interface {
 type UnimplementedHttpReqEditBoxAssistServer struct {
 }
 
-func (UnimplementedHttpReqEditBoxAssistServer) ReqHttpEdit(context.Context, *HttpEditBoxData) (*ByteData, error) {
+func (UnimplementedHttpReqEditBoxAssistServer) ReqHttpEdit(context.Context, *HttpEditBoxData) (*HttpStructureStandard.ByteData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReqHttpEdit not implemented")
 }
-func (UnimplementedHttpReqEditBoxAssistServer) IsReqHttpEditFor(context.Context, *HttpEditBoxData) (*Boole, error) {
+func (UnimplementedHttpReqEditBoxAssistServer) IsReqHttpEditFor(context.Context, *HttpEditBoxData) (*HttpStructureStandard.Boole, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsReqHttpEditFor not implemented")
 }
 func (UnimplementedHttpReqEditBoxAssistServer) mustEmbedUnimplementedHttpReqEditBoxAssistServer() {}
@@ -963,8 +962,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HttpResEditBoxAssistClient interface {
-	ResHttpEdit(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*ByteData, error)
-	IsResHttpEditFor(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*Boole, error)
+	ResHttpEdit(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*HttpStructureStandard.ByteData, error)
+	IsResHttpEditFor(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*HttpStructureStandard.Boole, error)
 }
 
 type httpResEditBoxAssistClient struct {
@@ -975,8 +974,8 @@ func NewHttpResEditBoxAssistClient(cc grpc.ClientConnInterface) HttpResEditBoxAs
 	return &httpResEditBoxAssistClient{cc}
 }
 
-func (c *httpResEditBoxAssistClient) ResHttpEdit(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*ByteData, error) {
-	out := new(ByteData)
+func (c *httpResEditBoxAssistClient) ResHttpEdit(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*HttpStructureStandard.ByteData, error) {
+	out := new(HttpStructureStandard.ByteData)
 	err := c.cc.Invoke(ctx, HttpResEditBoxAssist_ResHttpEdit_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -984,8 +983,8 @@ func (c *httpResEditBoxAssistClient) ResHttpEdit(ctx context.Context, in *HttpEd
 	return out, nil
 }
 
-func (c *httpResEditBoxAssistClient) IsResHttpEditFor(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*Boole, error) {
-	out := new(Boole)
+func (c *httpResEditBoxAssistClient) IsResHttpEditFor(ctx context.Context, in *HttpEditBoxData, opts ...grpc.CallOption) (*HttpStructureStandard.Boole, error) {
+	out := new(HttpStructureStandard.Boole)
 	err := c.cc.Invoke(ctx, HttpResEditBoxAssist_IsResHttpEditFor_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -997,8 +996,8 @@ func (c *httpResEditBoxAssistClient) IsResHttpEditFor(ctx context.Context, in *H
 // All implementations must embed UnimplementedHttpResEditBoxAssistServer
 // for forward compatibility
 type HttpResEditBoxAssistServer interface {
-	ResHttpEdit(context.Context, *HttpEditBoxData) (*ByteData, error)
-	IsResHttpEditFor(context.Context, *HttpEditBoxData) (*Boole, error)
+	ResHttpEdit(context.Context, *HttpEditBoxData) (*HttpStructureStandard.ByteData, error)
+	IsResHttpEditFor(context.Context, *HttpEditBoxData) (*HttpStructureStandard.Boole, error)
 	mustEmbedUnimplementedHttpResEditBoxAssistServer()
 }
 
@@ -1006,10 +1005,10 @@ type HttpResEditBoxAssistServer interface {
 type UnimplementedHttpResEditBoxAssistServer struct {
 }
 
-func (UnimplementedHttpResEditBoxAssistServer) ResHttpEdit(context.Context, *HttpEditBoxData) (*ByteData, error) {
+func (UnimplementedHttpResEditBoxAssistServer) ResHttpEdit(context.Context, *HttpEditBoxData) (*HttpStructureStandard.ByteData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResHttpEdit not implemented")
 }
-func (UnimplementedHttpResEditBoxAssistServer) IsResHttpEditFor(context.Context, *HttpEditBoxData) (*Boole, error) {
+func (UnimplementedHttpResEditBoxAssistServer) IsResHttpEditFor(context.Context, *HttpEditBoxData) (*HttpStructureStandard.Boole, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsResHttpEditFor not implemented")
 }
 func (UnimplementedHttpResEditBoxAssistServer) mustEmbedUnimplementedHttpResEditBoxAssistServer() {}
@@ -1180,7 +1179,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GetConTextMenuItemsServerClient interface {
-	GetConTextMenuItems(ctx context.Context, in *Str, opts ...grpc.CallOption) (*MenuInfo, error)
+	GetConTextMenuItems(ctx context.Context, in *HttpStructureStandard.Str, opts ...grpc.CallOption) (*MenuInfo, error)
 }
 
 type getConTextMenuItemsServerClient struct {
@@ -1191,7 +1190,7 @@ func NewGetConTextMenuItemsServerClient(cc grpc.ClientConnInterface) GetConTextM
 	return &getConTextMenuItemsServerClient{cc}
 }
 
-func (c *getConTextMenuItemsServerClient) GetConTextMenuItems(ctx context.Context, in *Str, opts ...grpc.CallOption) (*MenuInfo, error) {
+func (c *getConTextMenuItemsServerClient) GetConTextMenuItems(ctx context.Context, in *HttpStructureStandard.Str, opts ...grpc.CallOption) (*MenuInfo, error) {
 	out := new(MenuInfo)
 	err := c.cc.Invoke(ctx, GetConTextMenuItemsServer_GetConTextMenuItems_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -1204,7 +1203,7 @@ func (c *getConTextMenuItemsServerClient) GetConTextMenuItems(ctx context.Contex
 // All implementations must embed UnimplementedGetConTextMenuItemsServerServer
 // for forward compatibility
 type GetConTextMenuItemsServerServer interface {
-	GetConTextMenuItems(context.Context, *Str) (*MenuInfo, error)
+	GetConTextMenuItems(context.Context, *HttpStructureStandard.Str) (*MenuInfo, error)
 	mustEmbedUnimplementedGetConTextMenuItemsServerServer()
 }
 
@@ -1212,7 +1211,7 @@ type GetConTextMenuItemsServerServer interface {
 type UnimplementedGetConTextMenuItemsServerServer struct {
 }
 
-func (UnimplementedGetConTextMenuItemsServerServer) GetConTextMenuItems(context.Context, *Str) (*MenuInfo, error) {
+func (UnimplementedGetConTextMenuItemsServerServer) GetConTextMenuItems(context.Context, *HttpStructureStandard.Str) (*MenuInfo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConTextMenuItems not implemented")
 }
 func (UnimplementedGetConTextMenuItemsServerServer) mustEmbedUnimplementedGetConTextMenuItemsServerServer() {
@@ -1230,7 +1229,7 @@ func RegisterGetConTextMenuItemsServerServer(s grpc.ServiceRegistrar, srv GetCon
 }
 
 func _GetConTextMenuItemsServer_GetConTextMenuItems_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Str)
+	in := new(HttpStructureStandard.Str)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1242,7 +1241,7 @@ func _GetConTextMenuItemsServer_GetConTextMenuItems_Handler(srv interface{}, ctx
 		FullMethod: GetConTextMenuItemsServer_GetConTextMenuItems_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GetConTextMenuItemsServerServer).GetConTextMenuItems(ctx, req.(*Str))
+		return srv.(GetConTextMenuItemsServerServer).GetConTextMenuItems(ctx, req.(*HttpStructureStandard.Str))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1271,7 +1270,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProxyRequestHandlerClient interface {
-	ProxyHandleRequestReceived(ctx context.Context, in *HttpReqGroup, opts ...grpc.CallOption) (*ProxyRequestAction, error)
+	ProxyHandleRequestReceived(ctx context.Context, in *HttpStructureStandard.HttpReqGroup, opts ...grpc.CallOption) (*ProxyRequestAction, error)
 }
 
 type proxyRequestHandlerClient struct {
@@ -1282,7 +1281,7 @@ func NewProxyRequestHandlerClient(cc grpc.ClientConnInterface) ProxyRequestHandl
 	return &proxyRequestHandlerClient{cc}
 }
 
-func (c *proxyRequestHandlerClient) ProxyHandleRequestReceived(ctx context.Context, in *HttpReqGroup, opts ...grpc.CallOption) (*ProxyRequestAction, error) {
+func (c *proxyRequestHandlerClient) ProxyHandleRequestReceived(ctx context.Context, in *HttpStructureStandard.HttpReqGroup, opts ...grpc.CallOption) (*ProxyRequestAction, error) {
 	out := new(ProxyRequestAction)
 	err := c.cc.Invoke(ctx, ProxyRequestHandler_ProxyHandleRequestReceived_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -1295,7 +1294,7 @@ func (c *proxyRequestHandlerClient) ProxyHandleRequestReceived(ctx context.Conte
 // All implementations must embed UnimplementedProxyRequestHandlerServer
 // for forward compatibility
 type ProxyRequestHandlerServer interface {
-	ProxyHandleRequestReceived(context.Context, *HttpReqGroup) (*ProxyRequestAction, error)
+	ProxyHandleRequestReceived(context.Context, *HttpStructureStandard.HttpReqGroup) (*ProxyRequestAction, error)
 	mustEmbedUnimplementedProxyRequestHandlerServer()
 }
 
@@ -1303,7 +1302,7 @@ type ProxyRequestHandlerServer interface {
 type UnimplementedProxyRequestHandlerServer struct {
 }
 
-func (UnimplementedProxyRequestHandlerServer) ProxyHandleRequestReceived(context.Context, *HttpReqGroup) (*ProxyRequestAction, error) {
+func (UnimplementedProxyRequestHandlerServer) ProxyHandleRequestReceived(context.Context, *HttpStructureStandard.HttpReqGroup) (*ProxyRequestAction, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProxyHandleRequestReceived not implemented")
 }
 func (UnimplementedProxyRequestHandlerServer) mustEmbedUnimplementedProxyRequestHandlerServer() {}
@@ -1320,7 +1319,7 @@ func RegisterProxyRequestHandlerServer(s grpc.ServiceRegistrar, srv ProxyRequest
 }
 
 func _ProxyRequestHandler_ProxyHandleRequestReceived_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HttpReqGroup)
+	in := new(HttpStructureStandard.HttpReqGroup)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1332,7 +1331,7 @@ func _ProxyRequestHandler_ProxyHandleRequestReceived_Handler(srv interface{}, ct
 		FullMethod: ProxyRequestHandler_ProxyHandleRequestReceived_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProxyRequestHandlerServer).ProxyHandleRequestReceived(ctx, req.(*HttpReqGroup))
+		return srv.(ProxyRequestHandlerServer).ProxyHandleRequestReceived(ctx, req.(*HttpStructureStandard.HttpReqGroup))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1361,7 +1360,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProxyResponseHandlerClient interface {
-	ProxyHandleResponseReceived(ctx context.Context, in *HttpReqAndRes, opts ...grpc.CallOption) (*ProxyResponseAction, error)
+	ProxyHandleResponseReceived(ctx context.Context, in *HttpStructureStandard.HttpReqAndRes, opts ...grpc.CallOption) (*ProxyResponseAction, error)
 }
 
 type proxyResponseHandlerClient struct {
@@ -1372,7 +1371,7 @@ func NewProxyResponseHandlerClient(cc grpc.ClientConnInterface) ProxyResponseHan
 	return &proxyResponseHandlerClient{cc}
 }
 
-func (c *proxyResponseHandlerClient) ProxyHandleResponseReceived(ctx context.Context, in *HttpReqAndRes, opts ...grpc.CallOption) (*ProxyResponseAction, error) {
+func (c *proxyResponseHandlerClient) ProxyHandleResponseReceived(ctx context.Context, in *HttpStructureStandard.HttpReqAndRes, opts ...grpc.CallOption) (*ProxyResponseAction, error) {
 	out := new(ProxyResponseAction)
 	err := c.cc.Invoke(ctx, ProxyResponseHandler_ProxyHandleResponseReceived_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -1385,7 +1384,7 @@ func (c *proxyResponseHandlerClient) ProxyHandleResponseReceived(ctx context.Con
 // All implementations must embed UnimplementedProxyResponseHandlerServer
 // for forward compatibility
 type ProxyResponseHandlerServer interface {
-	ProxyHandleResponseReceived(context.Context, *HttpReqAndRes) (*ProxyResponseAction, error)
+	ProxyHandleResponseReceived(context.Context, *HttpStructureStandard.HttpReqAndRes) (*ProxyResponseAction, error)
 	mustEmbedUnimplementedProxyResponseHandlerServer()
 }
 
@@ -1393,7 +1392,7 @@ type ProxyResponseHandlerServer interface {
 type UnimplementedProxyResponseHandlerServer struct {
 }
 
-func (UnimplementedProxyResponseHandlerServer) ProxyHandleResponseReceived(context.Context, *HttpReqAndRes) (*ProxyResponseAction, error) {
+func (UnimplementedProxyResponseHandlerServer) ProxyHandleResponseReceived(context.Context, *HttpStructureStandard.HttpReqAndRes) (*ProxyResponseAction, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProxyHandleResponseReceived not implemented")
 }
 func (UnimplementedProxyResponseHandlerServer) mustEmbedUnimplementedProxyResponseHandlerServer() {}
@@ -1410,7 +1409,7 @@ func RegisterProxyResponseHandlerServer(s grpc.ServiceRegistrar, srv ProxyRespon
 }
 
 func _ProxyResponseHandler_ProxyHandleResponseReceived_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HttpReqAndRes)
+	in := new(HttpStructureStandard.HttpReqAndRes)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1422,7 +1421,7 @@ func _ProxyResponseHandler_ProxyHandleResponseReceived_Handler(srv interface{}, 
 		FullMethod: ProxyResponseHandler_ProxyHandleResponseReceived_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProxyResponseHandlerServer).ProxyHandleResponseReceived(ctx, req.(*HttpReqAndRes))
+		return srv.(ProxyResponseHandlerServer).ProxyHandleResponseReceived(ctx, req.(*HttpStructureStandard.HttpReqAndRes))
 	}
 	return interceptor(ctx, in, info, handler)
 }

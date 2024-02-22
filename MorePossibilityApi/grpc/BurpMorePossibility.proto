@@ -8,7 +8,7 @@ option objc_class_prefix = "HLW";                     //生成前缀 未知用�
 option go_package = "/BurpMorePossibilityApi";         //go 实例包名路径
 
 //import "google/api/annotations.proto";
-
+import "PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard.proto";
 
 //包名 服务名称 用于http2路由
 package BurpMorePossibilityApi;
@@ -35,40 +35,7 @@ service BurpServer{
   rpc GetProxyHistory(Str) returns(stream httpReqAndRes){}
 
   rpc ReportIssue(AuditIssue) returns(processingStatus){} // 上报问题
-
 }
-
-
-// AuditIssue 审计问题
-message AuditIssue{
-  string Name = 1;  // 名称
-  string Detail = 2 ; // 详情
-  string Remediation = 3; // 修复建议
-  string BaseUrl = 4; // 基础url
-  AuditIssueSeverity  severity = 8; // 问题严重程度
-  AuditIssueConfidence confidence = 9; // 问题确定程度
-  string Background = 5; // 问题背景
-  string remediationBackground = 7; // 修复详情
-  AuditIssueSeverity typicalSeverity = 10 ; // 典型严重程度
-  repeated httpReqAndRes HttpGroup = 11; // 一组http数据 请求 / 响应
-}
-
-// AuditIssueSeverity 问题严重程度
-enum AuditIssueSeverity{
-  HIGH = 0;  // 高
-  MEDIUM = 2 ; // 中
-  LOW = 3 ; // 低
-  INFORMATION = 4;  // 信息
-  FALSE_POSITIVE = 5;  // 误报
-}
-
-// AuditIssueConfidence 问题确定程度
-enum AuditIssueConfidence {
-  CERTAIN = 0;  // 肯定
-  FIRM = 2;  // 确定
-  TENTATIVE = 3 ; // 确定
-}
-
 
 
 // 实时流量镜像
@@ -79,7 +46,6 @@ service RealTimeTrafficMirroring{
     */
   rpc RealTimeTrafficMirroring(stream httpReqAndRes) returns (Str){}
 }
-
 
 
 //  注册服务路由列表
@@ -156,15 +122,14 @@ service HttpFlowHandler{
 // http流量请求数据
 message httpFlowReqData {
   httpReqGroup httpReqGroup = 1;
-  httpFlowSource httpFlowSource = 2;
+  httpFlowSource httpFlowSource = 2; // 请求来源
 }
 
 // http流量响应数据
 message httpFlowResData{
   httpReqAndRes httpReqAndRes = 1;
-  httpFlowSource httpFlowSource = 2;
+  httpFlowSource httpFlowSource = 2; // 请求来源
 }
-
 
 // 迭代处理器数据 包含调用的名称用于应对多种不同类型调用
 message PayloadProcessorData{
@@ -172,19 +137,10 @@ message PayloadProcessorData{
   bytes payload = 2; // 载荷
 }
 
-
 // 代理历史流量数据
 message ProxyHistoryData{
   repeated httpReqAndRes httpReqAndResData = 1;
 }
-
-
-// 下标的偏移量 用于在字节流中定位准确数据
-message SubscriptOffsets{
-  int64 startIndex = 1; // 开始下标
-  int64 endIndex = 2;   // 结束下标
-}
-
 
 // http请求操作
 message HttpRequestAction{
@@ -224,15 +180,12 @@ message ProxyResponseAction{
   //  httpResData res = 6; // 修改响应
 }
 
-
-
 // http编辑框数据, 名字
 message HttpEditBoxData{
   string name = 1; // 名字 编辑器名称
   httpReqAndRes httpReqAndResData = 2; // 一组http数据 请求 / 响应
   string info = 3 ; // 预留字段
 }
-
 
 // http键值对信息, 明文密文可相互匹配
 message httpKeyValuePair{
@@ -241,14 +194,12 @@ message httpKeyValuePair{
   bytes plaintext = 3;    // 密文数据
 }
 
-
 // http编辑器的键值对用于命中密文转换为明文, 没命中将不会显示
 message httpEditorKeyValue{
   ByteData key = 1;    // 键
   ByteData value = 2 ; // 值
   Str editorName = 3;  // 编辑器名称
 }
-
 
 // 一个上下文菜单项信息
 message MenuInfo{
@@ -300,22 +251,6 @@ message MenuItemsReturn{
 
 }
 
-// 布尔值
-message Boole{
-  bool boole = 1;
-}
-
-// 状态,用于表示函数执行状态，服务或对象状态
-message processingStatus{
-  bool boole = 1;     // 布尔值
-  string info = 3;    // 描述信息
-}
-
-
-//名称 String类型
-message Str{
-  string name = 1;
-}
 
 //服务路由表 包含零号以及第三方拓展愿意向burp提供的服务
 message serviceRoutingTable{
@@ -335,7 +270,6 @@ message serviceRegisterRoutingList{
 }
 
 
-
 //迭代生成器 数据
 message IntruderGeneratorData{
   bytes contentData = 1; // http 请求模板
@@ -344,94 +278,10 @@ message IntruderGeneratorData{
   string name = 4 ; // 名称
 }
 
-// 插入点
-message InsertionPointOffsets{
-  int64 StartIndex = 1; // 开始下标
-  int64 EndIndex = 2;   // 结束下标
-}
-
-
-// 字节数据
-message ByteData {
-  bytes byteData = 1;
-}
-
 // 载荷生成器结果
 message PayloadGeneratorResult{
   bytes byteData = 1; // 生成的载荷
   bool IsEnd = 2;     // 是否结束 true 为结束
-}
-
-
-
-// 一组http请求 (请求和响应)
-message httpReqAndRes {
-  httpReqData req = 1;
-  httpResData res = 2;
-  httpInfo info = 3;
-  annotationsText annotationsText = 4;
-}
-
-// http 单个请求 包含头部和体
-message httpReqData {
-  bytes Data = 1;                       // 请求包数据
-  string Url = 2;                       // 请求url
-  int64 BodyIndex = 3;                  // 请求体开始下标,如若请求体下标与总长度一致就是没有请求体
-  string httpVersion = 4;               // http版本
-  httpReqService httpReqService = 5;    // 目标信息
-  repeated Range Range = 6;             // 标记请求体范围
-}
-
-// Range 标记下标范围
-message Range {
-  int64 startIndexInclusive = 1;
-  int64 endIndexExclusive = 2;
-}
-
-
-// 单个请求组 用于包含 不同服务请求中的附带信息
-message httpReqGroup{
-  httpReqData httpReqData = 1;
-  annotationsText annotationsText = 2 ;
-}
-
-
-// http 单个响应 包含头部和体
-message httpResData {
-  bytes Data = 1;    //响应包数据
-  int32 StatusCode = 2 ; //状态码
-  int64 BodyIndex = 3;   //请求体开始下标,如若请求体下标与总长度一致就是没有请求体
-  string httpVersion = 5;    // http版本
-  repeated Range Range = 6;       // 标记请求体范围
-}
-
-// http 单个响应组 用于包含 不同服务响应中的附带信息
-message httpResGroup{
-  httpResData httpResData = 1;
-  annotationsText annotationsText = 2 ;
-}
-
-
-// http 请求主机的信息
-message httpReqService{
-  string ip = 1 ;
-  int32  port = 2 ;
-  bool  secure = 3;  // 是否使用https
-}
-
-
-// http信息
-message httpInfo {
-  int64 id = 1;      // id
-  string info = 2;   // 简述信息
-  bytes tmp = 3;     // 预留类型
-}
-
-// 注释信息
-message annotationsText {
-  bool isInfo = 1;           // 是否有注解信息
-  string notes = 2 ;         // 注解文本
-  highlightColor color = 3;  // 颜色
 }
 
 // 流量来源类型
@@ -469,18 +319,4 @@ enum serverTypeName {
 
 
 
-
-// 注解颜色
-enum highlightColor {
-  NONE = 0;    // 没有任何颜色
-  RED = 1;
-  ORANGE = 2;
-  YELLOW = 3;
-  GREEN = 4;
-  CYAN = 5;
-  BLUE = 6;
-  PINK = 7;
-  MAGENTA = 8;
-  GRAY = 9;
-}
 
