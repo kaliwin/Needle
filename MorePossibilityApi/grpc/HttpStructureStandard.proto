@@ -1,0 +1,147 @@
+//指定的当前proto语法的版本, 有2和3
+syntax = "proto3";
+
+
+// http结构标准 grpc通讯和序列化的标准
+option go_package = "/HttpStructureStandard";                        //go 实例包名路径
+
+
+// HttpRawByteStreamList http原始数据流列表
+message HttpRawByteStreamList {
+  repeated httpReqAndRes httpRawByteStreamList = 1; // http原始数据流列表
+}
+
+// AuditIssue 审计问题
+message AuditIssue{
+  string Name = 1;  // 名称
+  string Detail = 2 ; // 详情
+  string Remediation = 3; // 修复建议
+  string BaseUrl = 4; // 基础url
+  AuditIssueSeverity  severity = 8; // 问题严重程度
+  AuditIssueConfidence confidence = 9; // 问题确定程度
+  string Background = 5; // 问题背景
+  string remediationBackground = 7; // 修复详情
+  AuditIssueSeverity typicalSeverity = 10 ; // 典型严重程度
+  repeated httpReqAndRes HttpGroup = 11; // 一组http数据 请求 / 响应
+}
+
+// AuditIssueSeverity 问题严重程度
+enum AuditIssueSeverity{
+  HIGH = 0;  // 高
+  MEDIUM = 2 ; // 中
+  LOW = 3 ; // 低
+  INFORMATION = 4;  // 信息
+  FALSE_POSITIVE = 5;  // 误报
+}
+
+// AuditIssueConfidence 问题确定程度
+enum AuditIssueConfidence {
+  CERTAIN = 0;  // 肯定
+  FIRM = 2;  // 确定
+  TENTATIVE = 3 ; // 确定
+}
+
+// 下标的偏移量 用于在字节流中定位准确数据
+message SubscriptOffsets{
+  int64 startIndex = 1; // 开始下标
+  int64 endIndex = 2;   // 结束下标
+}
+// http编辑器的键值对用于命中密文转换为明文, 没命中将不会显示
+message httpEditorKeyValue{
+  ByteData key = 1;    // 键
+  ByteData value = 2 ; // 值
+  Str editorName = 3;  // 编辑器名称
+}
+// 布尔值
+message Boole{
+  bool boole = 1;
+}
+// 状态,用于表示函数执行状态，服务或对象状态
+message processingStatus{
+  bool boole = 1;     // 布尔值
+  string info = 3;    // 描述信息
+}
+//名称 String类型
+message Str{
+  string name = 1;
+}
+// 字节数据
+message ByteData {
+  bytes byteData = 1;
+}
+// 插入点
+message InsertionPointOffsets{
+  int64 StartIndex = 1; // 开始下标
+  int64 EndIndex = 2;   // 结束下标
+}
+// 一组http请求 (请求和响应)
+message httpReqAndRes {
+  httpReqData req = 1;
+  httpResData res = 2;
+  httpInfo info = 3;
+  annotationsText annotationsText = 4;
+}
+// http 单个请求 包含头部和体
+message httpReqData {
+  bytes Data = 1;                       // 请求包数据
+  string Url = 2;                       // 请求url
+  int64 BodyIndex = 3;                  // 请求体开始下标,如若请求体下标与总长度一致就是没有请求体
+  string httpVersion = 4;               // http版本
+  httpReqService httpReqService = 5;    // 目标信息
+  repeated Range Range = 6;             // 标记请求体范围
+}
+// Range 标记下标范围
+message Range {
+  int64 startIndexInclusive = 1;
+  int64 endIndexExclusive = 2;
+}
+// 单个请求组 用于包含 不同服务请求中的附带信息
+message httpReqGroup{
+  httpReqData httpReqData = 1;
+  annotationsText annotationsText = 2 ;
+}
+// http 单个响应 包含头部和体
+message httpResData {
+  bytes Data = 1;    //响应包数据
+  int32 StatusCode = 2 ; //状态码
+  int64 BodyIndex = 3;   //请求体开始下标,如若请求体下标与总长度一致就是没有请求体
+  string httpVersion = 5;    // http版本
+  repeated Range Range = 6;       // 标记请求体范围
+}
+// http 单个响应组 用于包含 不同服务响应中的附带信息
+message httpResGroup{
+  httpResData httpResData = 1;
+  annotationsText annotationsText = 2 ;
+}
+// http 请求主机的信息
+message httpReqService{
+  string ip = 1 ;
+  int32  port = 2 ;
+  bool  secure = 3;  // 是否使用https
+}
+// http信息
+message httpInfo {
+  int64 id = 1;      // id
+  string info = 2;   // 简述信息
+  bytes tmp = 3;     // 预留类型
+}
+// 注释信息
+message annotationsText {
+  bool isInfo = 1;           // 是否有注解信息
+  string notes = 2 ;         // 注解文本
+  highlightColor color = 3;  // 颜色
+}
+// 注解颜色
+enum highlightColor {
+  NONE = 0;    // 没有任何颜色
+  RED = 1;
+  ORANGE = 2;
+  YELLOW = 3;
+  GREEN = 4;
+  CYAN = 5;
+  BLUE = 6;
+  PINK = 7;
+  MAGENTA = 8;
+  GRAY = 9;
+}
+
