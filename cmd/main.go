@@ -1,13 +1,21 @@
 package main
 
 import (
-	"github.com/kaliwin/Needle/network/dns"
-	"log"
+	"fmt"
+	"github.com/kaliwin/Needle/CLI/logo"
 )
 
 func main() {
-	err := dns.ServeDNS(":5354", "server", "192.168.3.104")
-	if err != nil {
-		log.Println(err)
-	}
+
+	//	log := `
+	//     __                   .__
+	//    |__|____ __________  _|__| ______
+	//    |  \__  \\_  __ \  \/ /  |/  ___/
+	//    |  |/ __ \|  | \/\   /|  |\___ \
+	///\__|  (____  /__|    \_/ |__/____  >
+	//\______|    \/                    \/
+	//`
+
+	fmt.Println(logo.JarvisLogo)
+
 }
