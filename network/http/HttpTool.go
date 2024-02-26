@@ -611,6 +611,7 @@ func (r *RefactorStandardHttpReq) ConvertHttpReqOwn(req GrpcHttpReq) error {
 		return err
 	}
 	request.URL = uri
+	// 设置host
 	r.SetHostHerder(uri.Host)
 	//r.url = uri
 	r.body = req.GetData()[req.GetBodyIndex():]
