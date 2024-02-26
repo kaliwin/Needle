@@ -552,6 +552,7 @@ func (r *RefactorStandardHttpReq) SetHead(head http.Header) {
 // SetHostHerder 设置Host头
 func (r *RefactorStandardHttpReq) SetHostHerder(host string) {
 	r.request.Host = host
+	r.request.Header.Set("Host", host)
 }
 
 // SetRawPath 设置路径 包含参数 设置完整的Path 会覆盖原有的参数
@@ -610,6 +611,7 @@ func (r *RefactorStandardHttpReq) ConvertHttpReqOwn(req GrpcHttpReq) error {
 		return err
 	}
 	request.URL = uri
+	r.SetHostHerder(uri.Host)
 	//r.url = uri
 	r.body = req.GetData()[req.GetBodyIndex():]
 	r.httpVersion = req.GetHttpVersion()
