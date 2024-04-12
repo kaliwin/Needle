@@ -280,14 +280,19 @@ func (r *RefactorStandardHttpReq) GetRawPath() string {
 	return UrlToRawPath(r.request.URL)
 }
 
-// GetTarGetPath 获取目标地址
-func (r *RefactorStandardHttpReq) GetTarGetPath() *HttpStructureStandard.HttpReqService {
-	return r.httpReqService
+// GetRawQuery 获取请求参数 不包含路径
+func (r *RefactorStandardHttpReq) GetRawQuery() string {
+	return r.request.URL.RawQuery
 }
 
 // GetPath 获取请求路径 不包含参数
 func (r *RefactorStandardHttpReq) GetPath() string {
 	return r.request.URL.Path
+}
+
+// GetTarGetPath 获取目标地址
+func (r *RefactorStandardHttpReq) GetTarGetPath() *HttpStructureStandard.HttpReqService {
+	return r.httpReqService
 }
 
 // GetBody 获取请求体
@@ -298,6 +303,10 @@ func (r *RefactorStandardHttpReq) GetBody() []byte {
 // GetHead 获取头 为引用类型修改后此实例头也会跟着改动
 func (r *RefactorStandardHttpReq) GetHead() http.Header {
 	return r.request.Header
+}
+
+func (r *RefactorStandardHttpReq) GetHeadString(k string) string {
+	return r.request.Header.Get(k)
 }
 
 // GetMethod 获取请求方法
