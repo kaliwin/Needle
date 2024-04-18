@@ -38,13 +38,19 @@ service BurpServer{
 }
 
 
+// HttpFlowOut Http流量输出 不可选会全部输出
+service HttpFlowOut {
+  rpc HttpFlowOut(httpReqAndRes) returns (Str){}
+}
+
+
 // 实时流量镜像
 service RealTimeTrafficMirroring{
   /*
       实时流量传输
       burp将主动建立连接通过客户端流进行实时流量镜像
     */
-  rpc RealTimeTrafficMirroring(stream httpReqAndRes) returns (Str){}
+  rpc RealTimeTrafficMirroring(httpReqAndRes) returns (Str){}
 }
 
 

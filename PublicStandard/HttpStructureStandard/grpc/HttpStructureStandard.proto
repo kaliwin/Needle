@@ -6,6 +6,13 @@ syntax = "proto3";
 option go_package = "/HttpStructureStandard";                        //go 实例包名路径
 
 
+
+// Tmp 临时消息 无用
+message Tmp{
+  bool tmp = 1;
+}
+
+
 // HttpRawByteStreamList http原始数据流列表
 message HttpRawByteStreamList {
   repeated httpReqAndRes httpRawByteStreamList = 1; // http原始数据流列表

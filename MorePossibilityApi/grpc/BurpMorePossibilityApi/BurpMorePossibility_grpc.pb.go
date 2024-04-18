@@ -292,6 +292,96 @@ var BurpServer_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
+	HttpFlowOut_HttpFlowOut_FullMethodName = "/BurpMorePossibilityApi.HttpFlowOut/HttpFlowOut"
+)
+
+// HttpFlowOutClient is the client API for HttpFlowOut service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type HttpFlowOutClient interface {
+	HttpFlowOut(ctx context.Context, in *HttpStructureStandard.HttpReqAndRes, opts ...grpc.CallOption) (*HttpStructureStandard.Str, error)
+}
+
+type httpFlowOutClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewHttpFlowOutClient(cc grpc.ClientConnInterface) HttpFlowOutClient {
+	return &httpFlowOutClient{cc}
+}
+
+func (c *httpFlowOutClient) HttpFlowOut(ctx context.Context, in *HttpStructureStandard.HttpReqAndRes, opts ...grpc.CallOption) (*HttpStructureStandard.Str, error) {
+	out := new(HttpStructureStandard.Str)
+	err := c.cc.Invoke(ctx, HttpFlowOut_HttpFlowOut_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// HttpFlowOutServer is the server API for HttpFlowOut service.
+// All implementations must embed UnimplementedHttpFlowOutServer
+// for forward compatibility
+type HttpFlowOutServer interface {
+	HttpFlowOut(context.Context, *HttpStructureStandard.HttpReqAndRes) (*HttpStructureStandard.Str, error)
+	mustEmbedUnimplementedHttpFlowOutServer()
+}
+
+// UnimplementedHttpFlowOutServer must be embedded to have forward compatible implementations.
+type UnimplementedHttpFlowOutServer struct {
+}
+
+func (UnimplementedHttpFlowOutServer) HttpFlowOut(context.Context, *HttpStructureStandard.HttpReqAndRes) (*HttpStructureStandard.Str, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HttpFlowOut not implemented")
+}
+func (UnimplementedHttpFlowOutServer) mustEmbedUnimplementedHttpFlowOutServer() {}
+
+// UnsafeHttpFlowOutServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to HttpFlowOutServer will
+// result in compilation errors.
+type UnsafeHttpFlowOutServer interface {
+	mustEmbedUnimplementedHttpFlowOutServer()
+}
+
+func RegisterHttpFlowOutServer(s grpc.ServiceRegistrar, srv HttpFlowOutServer) {
+	s.RegisterService(&HttpFlowOut_ServiceDesc, srv)
+}
+
+func _HttpFlowOut_HttpFlowOut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HttpStructureStandard.HttpReqAndRes)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HttpFlowOutServer).HttpFlowOut(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HttpFlowOut_HttpFlowOut_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HttpFlowOutServer).HttpFlowOut(ctx, req.(*HttpStructureStandard.HttpReqAndRes))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// HttpFlowOut_ServiceDesc is the grpc.ServiceDesc for HttpFlowOut service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var HttpFlowOut_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "BurpMorePossibilityApi.HttpFlowOut",
+	HandlerType: (*HttpFlowOutServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "HttpFlowOut",
+			Handler:    _HttpFlowOut_HttpFlowOut_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "BurpMorePossibility.proto",
+}
+
+const (
 	RealTimeTrafficMirroring_RealTimeTrafficMirroring_FullMethodName = "/BurpMorePossibilityApi.RealTimeTrafficMirroring/RealTimeTrafficMirroring"
 )
 
@@ -301,7 +391,7 @@ const (
 type RealTimeTrafficMirroringClient interface {
 	// 实时流量传输
 	// burp将主动建立连接通过客户端流进行实时流量镜像
-	RealTimeTrafficMirroring(ctx context.Context, opts ...grpc.CallOption) (RealTimeTrafficMirroring_RealTimeTrafficMirroringClient, error)
+	RealTimeTrafficMirroring(ctx context.Context, in *HttpStructureStandard.HttpReqAndRes, opts ...grpc.CallOption) (*HttpStructureStandard.Str, error)
 }
 
 type realTimeTrafficMirroringClient struct {
@@ -312,38 +402,13 @@ func NewRealTimeTrafficMirroringClient(cc grpc.ClientConnInterface) RealTimeTraf
 	return &realTimeTrafficMirroringClient{cc}
 }
 
-func (c *realTimeTrafficMirroringClient) RealTimeTrafficMirroring(ctx context.Context, opts ...grpc.CallOption) (RealTimeTrafficMirroring_RealTimeTrafficMirroringClient, error) {
-	stream, err := c.cc.NewStream(ctx, &RealTimeTrafficMirroring_ServiceDesc.Streams[0], RealTimeTrafficMirroring_RealTimeTrafficMirroring_FullMethodName, opts...)
+func (c *realTimeTrafficMirroringClient) RealTimeTrafficMirroring(ctx context.Context, in *HttpStructureStandard.HttpReqAndRes, opts ...grpc.CallOption) (*HttpStructureStandard.Str, error) {
+	out := new(HttpStructureStandard.Str)
+	err := c.cc.Invoke(ctx, RealTimeTrafficMirroring_RealTimeTrafficMirroring_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &realTimeTrafficMirroringRealTimeTrafficMirroringClient{stream}
-	return x, nil
-}
-
-type RealTimeTrafficMirroring_RealTimeTrafficMirroringClient interface {
-	Send(*HttpStructureStandard.HttpReqAndRes) error
-	CloseAndRecv() (*HttpStructureStandard.Str, error)
-	grpc.ClientStream
-}
-
-type realTimeTrafficMirroringRealTimeTrafficMirroringClient struct {
-	grpc.ClientStream
-}
-
-func (x *realTimeTrafficMirroringRealTimeTrafficMirroringClient) Send(m *HttpStructureStandard.HttpReqAndRes) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *realTimeTrafficMirroringRealTimeTrafficMirroringClient) CloseAndRecv() (*HttpStructureStandard.Str, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(HttpStructureStandard.Str)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 // RealTimeTrafficMirroringServer is the server API for RealTimeTrafficMirroring service.
@@ -352,7 +417,7 @@ func (x *realTimeTrafficMirroringRealTimeTrafficMirroringClient) CloseAndRecv() 
 type RealTimeTrafficMirroringServer interface {
 	// 实时流量传输
 	// burp将主动建立连接通过客户端流进行实时流量镜像
-	RealTimeTrafficMirroring(RealTimeTrafficMirroring_RealTimeTrafficMirroringServer) error
+	RealTimeTrafficMirroring(context.Context, *HttpStructureStandard.HttpReqAndRes) (*HttpStructureStandard.Str, error)
 	mustEmbedUnimplementedRealTimeTrafficMirroringServer()
 }
 
@@ -360,8 +425,8 @@ type RealTimeTrafficMirroringServer interface {
 type UnimplementedRealTimeTrafficMirroringServer struct {
 }
 
-func (UnimplementedRealTimeTrafficMirroringServer) RealTimeTrafficMirroring(RealTimeTrafficMirroring_RealTimeTrafficMirroringServer) error {
-	return status.Errorf(codes.Unimplemented, "method RealTimeTrafficMirroring not implemented")
+func (UnimplementedRealTimeTrafficMirroringServer) RealTimeTrafficMirroring(context.Context, *HttpStructureStandard.HttpReqAndRes) (*HttpStructureStandard.Str, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RealTimeTrafficMirroring not implemented")
 }
 func (UnimplementedRealTimeTrafficMirroringServer) mustEmbedUnimplementedRealTimeTrafficMirroringServer() {
 }
@@ -377,30 +442,22 @@ func RegisterRealTimeTrafficMirroringServer(s grpc.ServiceRegistrar, srv RealTim
 	s.RegisterService(&RealTimeTrafficMirroring_ServiceDesc, srv)
 }
 
-func _RealTimeTrafficMirroring_RealTimeTrafficMirroring_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(RealTimeTrafficMirroringServer).RealTimeTrafficMirroring(&realTimeTrafficMirroringRealTimeTrafficMirroringServer{stream})
-}
-
-type RealTimeTrafficMirroring_RealTimeTrafficMirroringServer interface {
-	SendAndClose(*HttpStructureStandard.Str) error
-	Recv() (*HttpStructureStandard.HttpReqAndRes, error)
-	grpc.ServerStream
-}
-
-type realTimeTrafficMirroringRealTimeTrafficMirroringServer struct {
-	grpc.ServerStream
-}
-
-func (x *realTimeTrafficMirroringRealTimeTrafficMirroringServer) SendAndClose(m *HttpStructureStandard.Str) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *realTimeTrafficMirroringRealTimeTrafficMirroringServer) Recv() (*HttpStructureStandard.HttpReqAndRes, error) {
-	m := new(HttpStructureStandard.HttpReqAndRes)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
+func _RealTimeTrafficMirroring_RealTimeTrafficMirroring_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HttpStructureStandard.HttpReqAndRes)
+	if err := dec(in); err != nil {
 		return nil, err
 	}
-	return m, nil
+	if interceptor == nil {
+		return srv.(RealTimeTrafficMirroringServer).RealTimeTrafficMirroring(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RealTimeTrafficMirroring_RealTimeTrafficMirroring_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RealTimeTrafficMirroringServer).RealTimeTrafficMirroring(ctx, req.(*HttpStructureStandard.HttpReqAndRes))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 // RealTimeTrafficMirroring_ServiceDesc is the grpc.ServiceDesc for RealTimeTrafficMirroring service.
@@ -409,14 +466,13 @@ func (x *realTimeTrafficMirroringRealTimeTrafficMirroringServer) Recv() (*HttpSt
 var RealTimeTrafficMirroring_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "BurpMorePossibilityApi.RealTimeTrafficMirroring",
 	HandlerType: (*RealTimeTrafficMirroringServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "RealTimeTrafficMirroring",
-			Handler:       _RealTimeTrafficMirroring_RealTimeTrafficMirroring_Handler,
-			ClientStreams: true,
+			MethodName: "RealTimeTrafficMirroring",
+			Handler:    _RealTimeTrafficMirroring_RealTimeTrafficMirroring_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "BurpMorePossibility.proto",
 }
 

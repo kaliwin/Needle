@@ -81,6 +81,11 @@ func (s BurpGrpcServer) RegisterHttpFlowHandlerServer(h HttpFlowHandlerServer) {
 	BurpMorePossibilityApi.RegisterHttpFlowHandlerServer(s.Server, HttpFlowHandler{httpFlowHandlerServer: h})
 }
 
+// RegisterHttpFlowOut 注册http流输出
+func (s BurpGrpcServer) RegisterHttpFlowOut(out HttpFlowOut) {
+	BurpMorePossibilityApi.RegisterHttpFlowOutServer(s.Server, httpFlowOut{flowOut: out})
+}
+
 //  ------------------------------------------------  //
 
 // Start 启动服务 成功会陷入堵塞
@@ -101,6 +106,17 @@ func (s BurpGrpcServer) Stop() {
 	s.Server.Stop()
 }
 
+// httpFlowOut http流输出 proxy 或 map 的输出
+type httpFlowOut struct {
+	BurpMorePossibilityApi.UnimplementedHttpFlowOutServer
+	flowOut HttpFlowOut
+}
+
+// HttpFlowOut http流输出
+func (h httpFlowOut) HttpFlowOut(c context.Context, j *HttpStructureStandard.HttpReqAndRes) (*HttpStructureStandard.Str, error) {
+	return h.flowOut.HttpFlowOut(c, j)
+}
+
 // realTimeTrafficMirroring 实时流量镜像
 type realTimeTrafficMirroring struct {
 	BurpMorePossibilityApi.UnimplementedRealTimeTrafficMirroringServer
@@ -108,11 +124,11 @@ type realTimeTrafficMirroring struct {
 }
 
 // RealTimeTrafficMirroring 实时流量镜像
-func (r realTimeTrafficMirroring) RealTimeTrafficMirroring(server BurpMorePossibilityApi.RealTimeTrafficMirroring_RealTimeTrafficMirroringServer) error {
+func (r realTimeTrafficMirroring) RealTimeTrafficMirroring(c context.Context, data *HttpStructureStandard.HttpReqAndRes) (*HttpStructureStandard.Str, error) {
 	if r.realTimeTrafficMirroring != nil {
-		return r.realTimeTrafficMirroring.RealTimeTrafficMirroring(server)
+		return &HttpStructureStandard.Str{Name: ""}, r.realTimeTrafficMirroring.RealTimeTrafficMirroring(data)
 	}
-	return status.Errorf(codes.Unimplemented, "method RealTimeTrafficMirroring not implemented")
+	return &HttpStructureStandard.Str{Name: ""}, status.Errorf(codes.Unimplemented, "method RealTimeTrafficMirroring not implemented")
 }
 
 // intruderPayloadProcessor 迭代载荷处理器

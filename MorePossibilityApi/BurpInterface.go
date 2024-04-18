@@ -8,7 +8,12 @@ import (
 
 // RealTimeTrafficMirroring 实时流量镜像
 type RealTimeTrafficMirroring interface {
-	RealTimeTrafficMirroring(server BurpMorePossibilityApi.RealTimeTrafficMirroring_RealTimeTrafficMirroringServer) error
+	RealTimeTrafficMirroring(server *HttpStructureStandard.HttpReqAndRes) error
+}
+
+// HttpFlowOut http流输出 proxy 或 map 的输出
+type HttpFlowOut interface {
+	HttpFlowOut(c context.Context, reqAndRes *HttpStructureStandard.HttpReqAndRes) (*HttpStructureStandard.Str, error)
 }
 
 // IntruderPayloadProcessorServer 迭代载荷处理器

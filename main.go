@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	http2 "github.com/kaliwin/Needle/network/http"
+	"github.com/kaliwin/Needle/MorePossibilityApi"
+	"github.com/kaliwin/Needle/PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard"
+	"google.golang.org/grpc"
 )
 
 type Tc struct {
@@ -11,41 +14,22 @@ type Tc struct {
 	Status   int    `json:"status"`
 }
 
+func (t Tc) HttpFlowOut(c context.Context, reqAndRes *HttpStructureStandard.HttpReqAndRes) (*HttpStructureStandard.Str, error) {
+
+	fmt.Println(reqAndRes.GetReq().GetUrl())
+
+	return &HttpStructureStandard.Str{Name: ""}, nil
+}
+
 func main() {
-	//// 定义命令行参数
-	//var name string
-	//var age int
-	//var verbose bool
-	////var verName = ""
-	//
-	//flag.StringVar(&name, "name", "Guest", "Specify your name")
-	//flag.IntVar(&age, "age", 0, "Specify your age")
-	//flag.BoolVar(&verbose, "verbose", false, "Enable verbose mode")
-	////flag.StringVar(&verName, "verbose", "", " test ")
-	//
-	//// 解析命令行参数
-	//flag.Parse()
-	//
-	//// 使用解析后的参数
-	//fmt.Println("Name:", name)
-	//fmt.Println("Age:", age)
-	//fmt.Println("Verbose:", verbose)
-	////fmt.Println("verName:", verName)
 
-	//burpServer, err := MorePossibilityApi.NewBurpGrpcServer(":9000")
-	//if err != nil {
-	//	log.Println(err)
-	//}
-	//burpServer.RegisterIntruderPayloadProcessorServer(&test{})
-	//
-	//err = burpServer.Start()
-	//if err != nil {
-	//	log.Println(err)
-	//}
+	server, err := MorePossibilityApi.NewBurpGrpcServer(":9001", grpc.MaxRecvMsgSize(200*1024*1024))
+	if err != nil {
+		panic(err)
+	}
 
-	fmt.Println(http2.DefaultHeader["sd"])
-	//
-	//client := BurpMorePossibilityApi.NewBurpServerClient(nil)
-	//client.
+	server.RegisterHttpFlowOut(&Tc{})
+
+	server.Start()
 
 }
