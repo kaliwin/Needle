@@ -43,7 +43,7 @@ func StartMiddleman(serverAddr string, proxyAdder string, CACertPath string, CAK
 			r.URL.Host = r.Host
 			r.RequestURI = ""
 			//r.Host = "www.baidu.com"
-
+			fmt.Println(r.URL.String())
 			do, err := c.Do(r)
 			if err != nil {
 				log.Println(err)

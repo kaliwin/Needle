@@ -1,35 +1,30 @@
 package main
 
-import (
-	"context"
-	"fmt"
-	"github.com/kaliwin/Needle/MorePossibilityApi"
-	"github.com/kaliwin/Needle/PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard"
-	"google.golang.org/grpc"
-)
-
-type Tc struct {
-	ClientId string `json:"clientId"`
-	Data     string `json:"data"`
-	Status   int    `json:"status"`
-}
-
-func (t Tc) HttpFlowOut(c context.Context, reqAndRes *HttpStructureStandard.HttpReqAndRes) (*HttpStructureStandard.Str, error) {
-
-	fmt.Println(reqAndRes.GetReq().GetUrl())
-
-	return &HttpStructureStandard.Str{Name: ""}, nil
-}
+import "github.com/kaliwin/Needle/network/dns"
 
 func main() {
+	//var rootCmd = &cobra.Command{
+	//	Use:     "myapp",
+	//	Short:   "My sample Cobra app",
+	//	Long:    "This is a sample app to demonstrate Cobra.",
+	//	Version: "1.0.0",
+	//}
+	//
+	////var bi = &cobra.Command{
+	////	Use:   "version",
+	////	Short: "Print the version number of Hugo",
+	////	Long:  `All software has versions. This is Hugo's`,
+	////	Run: func(cmd *cobra.Command, args []string) {
+	////		fmt.Println("Hugo Static Site Generator v0.9 -- HEAD")
+	////	},
+	////}
+	//
+	////rootCmd.AddCommand(bi)
+	////rootCmd.RemoveCommand(versionCmd) // 移除命令
+	//rootCmd.CompletionOptions.DisableDefaultCmd = true
+	//
+	//rootCmd.Execute()
 
-	server, err := MorePossibilityApi.NewBurpGrpcServer(":9001", grpc.MaxRecvMsgSize(200*1024*1024))
-	if err != nil {
-		panic(err)
-	}
-
-	server.RegisterHttpFlowOut(&Tc{})
-
-	server.Start()
+	dns.ServeDNS(":53", ".", "192.168.3.108")
 
 }
