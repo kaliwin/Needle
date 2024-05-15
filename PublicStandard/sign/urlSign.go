@@ -3,7 +3,6 @@ package sign
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/google/uuid"
 	"net/url"
 	"strings"
 )
@@ -16,10 +15,10 @@ func UrlSign(Url *url.URL) string {
 		if s == "" {
 			continue
 		}
-		sign += fmt.Sprintf("-%d", StrToNum(s))
+		sign += fmt.Sprintf("_%d", StrToNum(s))
 	}
 
-	return fmt.Sprintf("%s-%d", sign, uuid.New().ID())
+	return sign
 }
 
 // StrToNum 字符串转数字
