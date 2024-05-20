@@ -33,6 +33,22 @@ func UrlSign(Url *url.URL) string {
 	return sign + join
 }
 
+// NineSign	9位字符签名
+func NineSign(s []byte) string {
+	sum := md5.Sum(s)
+	t := hex.EncodeToString(sum[:4])
+	toString := hex.EncodeToString(sum[15:])
+	return t + toString[:1]
+}
+
+// ThirteenSign 13位字符签名
+func ThirteenSign(s []byte) string {
+	sum := md5.Sum(s)
+	t := hex.EncodeToString(sum[:6])
+	toString := hex.EncodeToString(sum[15:])
+	return t + toString[:1]
+}
+
 // WuSign	Url Path签名
 // md5 计算 得到 5位字符的签名
 func WuSign(s []byte) string {

@@ -12,13 +12,10 @@ import (
 // HttpBleveIdSign http bleve id签名
 // 限制在 36个字符
 func HttpBleveIdSign(list *HttpStructureStandard.HttpReqAndRes) (string, error) {
-	getUrl := list.GetReq().GetUrl()
-	parse, err := url.Parse(getUrl)
-	if err != nil {
-		return "", err
-	}
-	uriSign := UrlSign(parse)
-	wuSign := WuSign(list.GetRes().GetData())
+
+	getUrl := fmt.Sprintf("%s:%d", list.GetReq().GetHttpReqService().GetIp(), list.GetReq().GetHttpReqService().GetPort())
+	uriSign := ThirteenSign([]byte(getUrl))
+	wuSign := ThirteenSign(list.GetRes().GetData())
 	uuidSign := UuidSign()
 	return uriSign + wuSign + uuidSign, nil
 }
