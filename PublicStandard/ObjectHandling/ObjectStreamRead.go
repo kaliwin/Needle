@@ -69,7 +69,10 @@ func ShowAllFile(dir string, res *[]string) error {
 	}
 	for _, entry := range readDir {
 		if entry.IsDir() { // 如果是目录 递归
-			return ShowAllFile(dir+"/"+entry.Name(), res)
+			err := ShowAllFile(dir+"/"+entry.Name(), res)
+			if err != nil {
+				return err
+			}
 		} else {
 			*res = append(*res, dir+"/"+entry.Name())
 		}
