@@ -1,8 +1,8 @@
-package ObjectHandling
+package file
 
 import (
 	"errors"
-	Interface "github.com/kaliwin/Needle/MagicRing/Integrate"
+	"github.com/kaliwin/Needle/IO/Interface"
 	"github.com/kaliwin/Needle/PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard"
 	"google.golang.org/protobuf/proto"
 	"io"
@@ -18,6 +18,24 @@ type FileIOReadStream struct {
 	IsDir      bool                 // 是否是目录
 	FileList   []string             // 文件列表
 	subscript  int                  // 下标
+}
+
+// Iteration 迭代器 返回true继续迭代 返回false停止迭代
+func (f *FileIOReadStream) Iteration(f2 func(any) bool) {
+	for {
+		next, err := f.Next()
+		if err != nil {
+			return
+		}
+
+		if !f2(next) {
+			return
+		}
+	}
+}
+
+func (f *FileIOReadStream) Class() Interface.ObjectType {
+	return f.ObjectType
 }
 
 func (f *FileIOReadStream) Next() (any, error) {
@@ -47,7 +65,7 @@ func (f *FileIOReadStream) Close() error {
 
 // Go 启动 如果是目录则读取目录下的所有文件
 func (f *FileIOReadStream) Go() error {
-	//f.subscript = -1
+	//fie.subscript = -1
 	if f.IsDir { // true 读取目录
 		ts := make([]string, 0)
 		err := ShowAllFile(f.FilePath, &ts)
@@ -80,7 +98,15 @@ func ShowAllFile(dir string, res *[]string) error {
 	return nil
 }
 
-// 数据转换
+// BuildFIleObjectStream 构建文件对象流
+func BuildFIleObjectStream(path string, isDir bool, objectType Interface.ObjectType) (FileIOReadStream, error) {
+	stream := FileIOReadStream{
+		ObjectType: objectType,
+		FilePath:   path,
+		IsDir:      isDir,
+	}
+	return stream, stream.Go()
+}
 
 // Conversion 数据转换 标记器仅支持[]byte 和 protobuf反序列化后的实例 两种数据类型
 func Conversion(data []byte, ObjectType Interface.ObjectType) (any, error) {
@@ -99,14 +125,4 @@ func Conversion(data []byte, ObjectType Interface.ObjectType) (any, error) {
 	}
 
 	return nil, errors.New("unsupported data type")
-}
-
-// BuildFIleObjectStream 构建文件对象流
-func BuildFIleObjectStream(path string, isDir bool, objectType Interface.ObjectType) (FileIOReadStream, error) {
-	stream := FileIOReadStream{
-		ObjectType: objectType,
-		FilePath:   path,
-		IsDir:      isDir,
-	}
-	return stream, stream.Go()
 }
