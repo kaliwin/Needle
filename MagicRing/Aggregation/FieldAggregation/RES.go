@@ -41,6 +41,10 @@ func (r ResFieldAggregation) Accepting(reqAndRes *HttpStructureStandard.HttpReqA
 			if r2.Host[host] { // 主机存在
 				return nil
 			}
+			err := os.MkdirAll(filePath, os.ModePerm)
+			if err != nil {
+				return err
+			}
 		} else {
 			err := os.MkdirAll(filePath, os.ModePerm)
 			if err != nil {
