@@ -153,8 +153,8 @@ const (
 // GetTlsCASubject 获取CA证书的主题
 func GetTlsCASubject() pkix.Name {
 	return pkix.Name{
-		Organization:       []string{"MorePossibility CA"},
-		OrganizationalUnit: []string{"MorePossibility"},
+		Organization:       []string{"MorePossibility"},
+		OrganizationalUnit: []string{"MorePossibility CA"},
 		CommonName:         "MorePossibility",
 	}
 }

@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
-	"net/http"
 )
 
 func main() {
@@ -20,15 +18,5 @@ func main() {
 	//	fmt.Println(len(idSign))
 	//}
 
-	resp, err := http.Get("https://132.120.192.66:38089/cas-server-webapp-3.3.3/")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(resp.Status)
-	all, err := io.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(string(all))
+	fmt.Println("hello world!")
 }
