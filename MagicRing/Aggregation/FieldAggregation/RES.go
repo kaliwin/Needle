@@ -1,10 +1,9 @@
 package FieldAggregation
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"github.com/google/uuid"
 	"github.com/kaliwin/Needle/PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard"
 	"net/url"
 	"os"
@@ -17,7 +16,7 @@ type ResFieldAggregation struct {
 	m    map[string]resMd5
 }
 
-// Accepting 接受数据 错误不会影响先前数据和后续数据
+// Accepting 接受数据 错误不会影响先前数据和后续数据 文件名是sha256-最后一个/后的内容
 func (r ResFieldAggregation) Accepting(reqAndRes *HttpStructureStandard.HttpReqAndRes) error {
 
 	bytes := reqAndRes.GetRes().GetData()[reqAndRes.GetRes().GetBodyIndex():]
@@ -28,7 +27,7 @@ func (r ResFieldAggregation) Accepting(reqAndRes *HttpStructureStandard.HttpReqA
 			return err
 		}
 
-		sum := md5.Sum(bytes)
+		sum := sha256.Sum256(bytes)
 		toString := hex.EncodeToString(sum[:])
 
 		host := fmt.Sprintf("%s:%d", reqAndRes.GetReq().GetHttpReqService().GetIp(), reqAndRes.GetReq().GetHttpReqService().GetPort())
@@ -67,7 +66,7 @@ func (r ResFieldAggregation) Accepting(reqAndRes *HttpStructureStandard.HttpReqA
 			path = parse.Path[lastIndex+1:] // 取最后一个/后的内容
 		}
 
-		fileName := fmt.Sprintf("%s-%d-%s", toString, uuid.New().ID(), path)
+		fileName := fmt.Sprintf("%s-%s", toString, path)
 
 		err = os.WriteFile(filePath+"/"+fileName, bytes, os.ModePerm)
 		if err != nil {
