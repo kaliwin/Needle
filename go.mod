@@ -8,6 +8,12 @@ require (
 	github.com/miekg/dns v1.1.57
 	google.golang.org/grpc v1.60.1
 	google.golang.org/protobuf v1.33.0
+	software.sslmate.com/src/go-pkcs12 v0.4.0
+)
+
+require (
+	github.com/golang/protobuf v1.5.3 // indirect
+	golang.org/x/crypto v0.19.0 // indirect
 )
 
 require (

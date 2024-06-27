@@ -48,3 +48,5 @@ __  __  ___ _               _
           /___/                                                                    
 `
 )
+
+const LogoREADME = "这是ManDown的一部分\n隶属于MorePossibility https://github.com/MorePossibility"

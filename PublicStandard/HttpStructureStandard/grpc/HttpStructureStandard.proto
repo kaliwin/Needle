@@ -6,7 +6,6 @@ syntax = "proto3";
 option go_package = "/HttpStructureStandard";                        //go 实例包名路径
 
 
-
 // Tmp 临时消息 无用
 message Tmp{
   bool tmp = 1;
@@ -128,7 +127,7 @@ message httpReqService{
 }
 // http信息
 message httpInfo {
-  int64 id = 1;      // id
+  string id = 1;      // id 唯一标识符
   string info = 2;   // 简述信息
   bytes tmp = 3;     // 预留类型
 }

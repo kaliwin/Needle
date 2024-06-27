@@ -22,13 +22,13 @@ import (
 
 // MakePemCert 证书生成器
 func MakePemCert(cACert CACert, hosts []string, CommonName string, subject pkix.Name) (cert []byte, privacy []byte, er error) {
-	priv, err := GeneratePrivateKey(Rsa2048) // 生成私钥
+	privy, err := GeneratePrivateKey(Rsa2048) // 生成私钥
 	if err != nil {
 		return nil, nil, err
 	}
 
 	subject.CommonName = CommonName
-	pub := priv.(crypto.Signer).Public() // 生成公钥
+	pub := privy.(crypto.Signer).Public() // 生成公钥
 	expiration := time.Now().AddDate(2, 3, 0)
 	tpl := &x509.Certificate{
 		SerialNumber: RandomSerialNumber(),
@@ -55,7 +55,7 @@ func MakePemCert(cACert CACert, hosts []string, CommonName string, subject pkix.
 	}
 
 	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: c})
-	privDER, err := x509.MarshalPKCS8PrivateKey(priv)
+	privDER, err := x509.MarshalPKCS8PrivateKey(privy)
 	privPEM := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: privDER})
 	return certPEM, privPEM, nil
 }
@@ -121,11 +121,11 @@ func MakeCA(k CryptoType, subject pkix.Name) ([]byte, []byte, error) {
 	// 创造证书
 	cert, err := x509.CreateCertificate(rand.Reader, tpl, tpl, pub, priv)
 	// 生成私钥DER格式
-	privDER, err := x509.MarshalPKCS8PrivateKey(priv)
+	privyDER, err := x509.MarshalPKCS8PrivateKey(priv)
 	return pem.EncodeToMemory(
 			&pem.Block{Type: "CERTIFICATE", Bytes: cert}),
 		pem.EncodeToMemory(
-			&pem.Block{Type: "PRIVATE KEY", Bytes: privDER}),
+			&pem.Block{Type: "PRIVATE KEY", Bytes: privyDER}),
 		err
 }
 
@@ -170,8 +170,8 @@ func CACerToPemToByte(ca []byte) []byte {
 }
 
 // CAPrivCerToByte pem 编码
-func CAPrivCerToByte(priv []byte) []byte {
-	return pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: priv})
+func CAPrivCerToByte(privy []byte) []byte {
+	return pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: privy})
 }
 
 // RandomSerialNumber 生产随机序列号

@@ -26,7 +26,8 @@ func ServeDNS(address string, DomainSuffix string, yourIP string) error {
 
 			if strings.Index(domain, DomainSuffix) != -1 { // 如果是需要劫持的域名
 				ip := yourIP // 替换为你想要映射的 IP 地址
-				fmt.Println(domain)
+				fmt.Println("[+] " + domain)
+
 				// 构建 DNS 回答
 				rr, err := dns.NewRR(fmt.Sprintf("%s IN A %s", domain, ip))
 				if err != nil {
