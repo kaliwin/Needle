@@ -45,7 +45,6 @@ func (receiver Acting) handleHttps(w http.ResponseWriter, r *http.Request) {
 
 	request, err := http.ReadRequest(bufio.NewReader(server)) // 读取请求
 	if err != nil {
-		fmt.Println("[-] sdsdsdsd")
 		log.Println(err)
 		return
 	}
