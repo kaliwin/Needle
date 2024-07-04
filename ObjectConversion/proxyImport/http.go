@@ -72,7 +72,7 @@ func (h *HttpProxyImport) handleHTTPS(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	_, err = hijack.Write([]byte("HTTP/1.0 200 Connection established\r\n\r\n")) // 返回200
+	_, err = hijack.Write([]byte("HTTP/1.0 200 Connection established\r\n\r\n")) // 返回200 代表连接成功
 	if err != nil {
 		return
 	}
@@ -95,6 +95,16 @@ func (h *HttpProxyImport) handleHTTPS(w http.ResponseWriter, r *http.Request) {
 // handleResponse 处理响应
 func (h *HttpProxyImport) handleResponse(w io.Writer, r *http.Request) {
 	httpGroupId := r.Header.Get(string(http2.MarkHttpGroupID)) // 获取http组ID
+
+	if httpGroupId == "test" {
+		_, err := w.Write([]byte("HTTP/1.1 200\nDate: Wed, 03 Jul 2024 10:26:33 GMT\nLength: 1223\nContent-Length: 0\n\n"))
+		if err != nil {
+			log.Panicln(err)
+			return
+		}
+		return
+	}
+
 	if len(httpGroupId) > 1 {
 		fileC := fmt.Sprintf("%s.httpGroup", httpGroupId)
 		readFile, err := os.ReadFile(h.httpGroupPath + "/" + fileC) // 读取文件

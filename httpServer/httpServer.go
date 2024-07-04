@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"github.com/kaliwin/Needle/ObjectConversion/proxyImport"
+	"github.com/kaliwin/Needle/crypto/certificate"
 	"github.com/kaliwin/Needle/httpServer/middleman"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -60,21 +60,43 @@ func main() {
 	////certificate.MakePemCert(pemCA, []string{"www.baidu.com"}, "sd", certificate.GetTlsCASubject())
 	////Test()
 	////middleman.BuildObjectC()
-	//dns.ServeDNS(":53", "puniaokeji.com", "192.168.124.11")
+	////dns.ServeDNS(":53", "puniaokeji.com", "192.168.124.11")
+	//
+	//httpProxyImport, err := proxyImport.BuildHttpProxyImport("/root/tmp/nginx", "/root/cyvk/ManDown/CA/burpCA.cer", "/root/cyvk/ManDown/CA/burpCA-key.cer")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//now := time.Now()
+	//
+	//go httpProxyImport.StartHttpServer(":9010")
+	////time.Sleep(time.Second * 1)
+	//httpProxyImport.Go("http://127.0.0.1:8080")
+	//now1 := time.Now()
+	//fmt.Println(now1.Sub(now).String())
+	//fmt.Println("进程结束")
+	//time.Sleep(time.Hour * 8)
+	//fmt.Println("进程结束")
 
-	httpProxyImport, err := proxyImport.BuildHttpProxyImport("/root/tmp/mo", "/root/cyvk/ManDown/CA/burpCA.cer", "/root/cyvk/ManDown/CA/burpCA-key.cer")
+	ca, err := os.ReadFile("/root/cyvk/ManDown/CA/burpCA.cer")
 	if err != nil {
 		panic(err)
 	}
 
-	now := time.Now()
+	key, err := os.ReadFile("/root/cyvk/ManDown/CA/burpCA-key.cer")
+	if err != nil {
+		panic(err)
+	}
 
-	go httpProxyImport.StartHttpServer(":9010")
-	//time.Sleep(time.Second * 1)
-	httpProxyImport.Go("http://127.0.0.1:8080")
-	now1 := time.Now()
-	fmt.Println(now1.Sub(now).String())
-	fmt.Println("进程结束")
-	time.Sleep(time.Hour * 8)
-	fmt.Println("进程结束")
+	loadCA, _ := certificate.LoadCA(ca, key)
+	test := middleman.HttpsTest{CACert: loadCA}
+	go test.Go()
+
+	//
+	middlemanHttp, err := middleman.NewMiddlemanHttp("/root/cyvk/ManDown/CA/burpCA.cer", "/root/cyvk/ManDown/CA/burpCA-key.cer")
+	if err != nil {
+		panic(err)
+	}
+	middlemanHttp.HttpServer.Addr = ":9010"
+	middlemanHttp.HttpServer.ListenAndServe()
 }
