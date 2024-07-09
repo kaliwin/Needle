@@ -9,6 +9,7 @@ import (
 	"github.com/kaliwin/Needle/PublicStandard/HttpStructureStandard/grpc/HttpStructureStandard"
 	http2 "github.com/kaliwin/Needle/PublicStandard/mark/http"
 	"github.com/kaliwin/Needle/crypto/certificate"
+	"github.com/kaliwin/Needle/httpServer/middleman"
 	http3 "github.com/kaliwin/Needle/network/http"
 	"google.golang.org/protobuf/proto"
 	"io"
@@ -21,7 +22,8 @@ import (
 
 // 纯http代理方式导入
 
-// HttpProxyImport http 代理导入
+// HttpProxyImport http 代理导入 确保请求不是畸形的 会在请求头中加入httpGroupID 用于标识请求
+// 可以使用插件压制请求头中的httpGroupID
 type HttpProxyImport struct {
 	// 代理地址
 	//TarGetProxy http3.HttpClient // 目标代理地址
@@ -31,11 +33,20 @@ type HttpProxyImport struct {
 
 	CACert certificate.CACert // CA证书 用于签发证书 通常burp可以设置信任所有证书
 	//Client http3.HttpClient   // http客户端
+
+	server *http.Server
 }
 
-// StartHttpServer 启动http服务器
+// StartHttpServer 启动http服务器 成功会陷入阻塞
 func (h *HttpProxyImport) StartHttpServer(addr string) error {
-	return http.ListenAndServe(addr, h)
+	h.server = &http.Server{Addr: addr, Handler: h}
+
+	return h.server.ListenAndServe()
+}
+
+// Shutdown 关闭服务器
+func (h *HttpProxyImport) Shutdown() error {
+	return h.server.Shutdown(nil)
 }
 
 // ServeHTTP http代理服务器 处理代理请求
@@ -78,7 +89,7 @@ func (h *HttpProxyImport) handleHTTPS(w http.ResponseWriter, r *http.Request) {
 	}
 	server := tls.Server(hijack, &tls.Config{ // 设置tls配置 强制使用http1.1
 		GetCertificate: func(info *tls.ClientHelloInfo) (*tls.Certificate, error) {
-			return BuildCa(h.CACert, info.ServerName) // 使用CA签发证书
+			return middleman.BuildCa(h.CACert, info.ServerName) // 使用CA签发证书
 		},
 		NextProtos: []string{"http/1.1"}, // 强制使用http1.1 TLS协议保持默认
 	})
@@ -113,12 +124,12 @@ func (h *HttpProxyImport) handleResponse(w io.Writer, r *http.Request) {
 			return
 		}
 		res := HttpStructureStandard.HttpReqAndRes{}
-		err = proto.Unmarshal(readFile, &res)
+		err = proto.Unmarshal(readFile, &res) // 反序列化
 		if err != nil {
 			log.Panicln(err)
 			return
 		}
-		_, err = w.Write(res.GetRes().GetData()) // 写入数据
+		_, err = w.Write(res.GetRes().GetData()) // 写入响应字节
 		if err != nil {
 			log.Panicln(err)
 			return
@@ -146,11 +157,11 @@ func (h *HttpProxyImport) Go(tarGetProxy string) {
 		return
 	}
 
-	taskPool := make(chan *HttpStructureStandard.HttpReqAndRes, 100)
+	taskPool := make(chan *HttpStructureStandard.HttpReqAndRes, 60)
 
 	group := sync.WaitGroup{}
 
-	for i := 0; i < 20; i++ { // 10个工人
+	for i := 0; i < 15; i++ { // 15个工人   burp默认下会启动被动扫描 会导致cpu占用过高 15个够了
 
 		go func() {
 			group.Add(1)
@@ -165,9 +176,10 @@ func (h *HttpProxyImport) Go(tarGetProxy string) {
 				request.Header.Set(string(http2.MarkHttpGroupID), res.GetInfo().GetId()) // 设置http组ID
 				request.RequestURI = ""
 
+				// 目标地址
 				request.URL.Host = fmt.Sprintf("%s:%d", res.GetReq().GetHttpReqService().GetIp(), res.GetReq().GetHttpReqService().GetPort())
 
-				if res.GetReq().GetHttpReqService().GetSecure() {
+				if res.GetReq().GetHttpReqService().GetSecure() { // 协议
 					request.URL.Scheme = "https"
 				} else {
 					request.URL.Scheme = "http"
@@ -221,16 +233,16 @@ func BuildHttpProxyImport(httpGroupPath, caPath, caKeyPath string) (HttpProxyImp
 	return proxyImport, nil
 }
 
-// BuildCa 签发证书
-func BuildCa(CA certificate.CACert, name string) (*tls.Certificate, error) {
-	cert, privacy, err := certificate.MakePemCert(CA, []string{"*." + name, name}, name, certificate.GetTlsCASubject())
-	if err != nil {
-		return nil, err
-	}
-	pair, err := tls.X509KeyPair(cert, privacy)
-
-	return &pair, err
-}
+//// BuildCa 签发证书
+//func BuildCa(CA certificate.CACert, name string) (*tls.Certificate, error) {
+//	cert, privacy, err := certificate.MakePemCert(CA, []string{"*." + name, name}, name, certificate.GetTlsCASubject())
+//	if err != nil {
+//		return nil, err
+//	}
+//	pair, err := tls.X509KeyPair(cert, privacy)
+//
+//	return &pair, err
+//}
 
 //////
 /////

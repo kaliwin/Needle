@@ -84,7 +84,7 @@ message InsertionPointOffsets{
 message httpReqAndRes {
   httpReqData req = 1;
   httpResData res = 2;
-  httpInfo info = 3;
+  httpInfo info = 3;下·
   annotationsText annotationsText = 4;
 }
 // http 单个请求 包含头部和体

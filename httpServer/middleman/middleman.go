@@ -40,6 +40,7 @@ func StartMiddleman(serverAddr string, proxyAdder string, CACertPath string, CAK
 	server := &http.Server{
 		Addr: serverAddr, // 监听端口
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			//fmt.Println(" ============================================== ")
 			r.URL.Scheme = "https" // 协议头写死https
 			r.URL.Host = r.Host
 			r.RequestURI = ""
@@ -77,8 +78,10 @@ func StartMiddleman(serverAddr string, proxyAdder string, CACertPath string, CAK
 					log.Println(err)
 					return nil, err
 				}
+				//fmt.Println("签发证书成功")
 				return &pair, nil
 			},
+			InsecureSkipVerify: true,
 		},
 	}
 
@@ -96,7 +99,7 @@ func StartMiddleman(serverAddr string, proxyAdder string, CACertPath string, CAK
 //
 //}
 
-// MiddlemanHttp http中间人
+// MiddlemanHttp http中间人代理服务器
 type MiddlemanHttp struct {
 	CACert     certificate.CACert // CA证书 用于动态签发通信证书 通常burp可以设置信任所有证书
 	HttpServer http.Server        // http服务器

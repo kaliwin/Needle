@@ -10,7 +10,7 @@ import (
 // ServeDNS 启动中间人DNS服务器
 // 会将所有的DNS请求转发到一个指定IP 用于中间人攻击 全流量监听
 // DomainSuffix 为. 就是所有的域名都会被劫持到指定IP
-func ServeDNS(address string, DomainSuffix string, yourIP string) error {
+func ServeDNS(address string, DomainSuffix []string, yourIP string) error {
 	server := &dns.Server{Addr: address, Net: "udp"}
 
 	// 设置 DNS 处理函数
@@ -24,28 +24,30 @@ func ServeDNS(address string, DomainSuffix string, yourIP string) error {
 			// 查询域名和对应的 IP 地址
 			domain := strings.ToLower(q.Name)
 
-			if strings.Index(domain, DomainSuffix) != -1 { // 如果是需要劫持的域名
-				ip := yourIP // 替换为你想要映射的 IP 地址
-				fmt.Println("[+] " + domain)
+			for _, suffix := range DomainSuffix {
+				if strings.Index(domain, suffix) != -1 { // 如果是需要劫持的域名
+					ip := yourIP // 替换为你想要映射的 IP 地址
+					fmt.Println("[+] " + domain)
 
-				// 构建 DNS 回答
-				rr, err := dns.NewRR(fmt.Sprintf("%s IN A %s", domain, ip))
-				if err != nil {
-					log.Printf("Error creating DNS response: %v", err)
-					continue
+					// 构建 DNS 回答
+					rr, err := dns.NewRR(fmt.Sprintf("%s IN A %s", domain, ip))
+					if err != nil {
+						log.Printf("Error creating DNS response: %v", err)
+						continue
+					}
+					// 添加回答到 DNS 消息
+					m.Answer = append(m.Answer, rr)
+
+				} else {
+					qDomain := domain[:len(domain)-1]
+					msg, err := resolveDNS("114.114.114.114:53", qDomain) // 向上解析
+					if err != nil {
+						log.Printf("Error creating DNS response: %v", err)
+						continue
+					}
+					m.Answer = append(m.Answer, msg.Answer...) // 添加回答到 DNS 消息
 				}
-				// 添加回答到 DNS 消息
-				m.Answer = append(m.Answer, rr)
 
-			} else {
-				qDomain := domain[:len(domain)-1]
-				msg, err := resolveDNS("114.114.114.114:53", qDomain)
-				if err != nil {
-					log.Printf("Error creating DNS response: %v", err)
-					continue
-				}
-
-				m.Answer = append(m.Answer, msg.Answer...)
 			}
 
 		}
@@ -57,7 +59,7 @@ func ServeDNS(address string, DomainSuffix string, yourIP string) error {
 	})
 
 	log.Printf("Starting DNS server on %s\n", address)
-	return server.ListenAndServe()
+	return server.ListenAndServe() // 启动 DNS 服务器
 }
 
 func handleDNSRequest(w dns.ResponseWriter, r *dns.Msg) {

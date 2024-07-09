@@ -1,10 +1,9 @@
 package main
 
 import (
-	"github.com/kaliwin/Needle/crypto/certificate"
 	"github.com/kaliwin/Needle/httpServer/middleman"
+	"github.com/kaliwin/Needle/network/dns"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -78,25 +77,27 @@ func main() {
 	//time.Sleep(time.Hour * 8)
 	//fmt.Println("进程结束")
 
-	ca, err := os.ReadFile("/root/cyvk/ManDown/CA/burpCA.cer")
-	if err != nil {
-		panic(err)
-	}
-
-	key, err := os.ReadFile("/root/cyvk/ManDown/CA/burpCA-key.cer")
-	if err != nil {
-		panic(err)
-	}
-
-	loadCA, _ := certificate.LoadCA(ca, key)
-	test := middleman.HttpsTest{CACert: loadCA}
-	go test.Go()
+	//ca, err := os.ReadFile("/root/cyvk/ManDown/CA/burpCA.cer")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//key, err := os.ReadFile("/root/cyvk/ManDown/CA/burpCA-key.cer")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//loadCA, _ := certificate.LoadCA(ca, key)
+	//test := middleman.HttpsTest{CACert: loadCA}
+	//go test.Go()
 
 	//
-	middlemanHttp, err := middleman.NewMiddlemanHttp("/root/cyvk/ManDown/CA/burpCA.cer", "/root/cyvk/ManDown/CA/burpCA-key.cer")
+	go dns.ServeDNS(":53", []string{"wodataprov.chinaunicom.cn", "uepm.newbuy.chinaunicom.cn"}, "192.168.3.108")
+
+	err := middleman.StartMiddleman(":443", "http://127.0.0.1:8080", "/root/cyvk/ManDown/CA/burpCA.cer", "/root/cyvk/ManDown/CA/burpCA-key.cer")
 	if err != nil {
 		panic(err)
 	}
-	middlemanHttp.HttpServer.Addr = ":9010"
-	middlemanHttp.HttpServer.ListenAndServe()
+	//middlemanHttp.HttpServer.Addr = ":9010"
+	//middlemanHttp.HttpServer.ListenAndServe()
 }
