@@ -10,11 +10,17 @@ const (
 	Http2 = "HTTP/2"
 )
 
+const (
+	HttpSScheme = "https"
+	HttpScheme  = "http"
+)
+
 // 标准下该有的头部
 
 const (
 	Host          = "Host"           // 请求主机
-	UA            = "User-Agent"     // UA
+	UserAgent     = "User-Agent"     // UA
 	ContentLength = "Content-Length" // 体长度
 	Accept        = "Accept"         // 接受类型   */* 表示任意类型
+	ContentType   = "Content-Type"
 )

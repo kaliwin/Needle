@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <targets>
+      <target name="root@aliyun.server:22" type="ssh/sftp" uuid="64cf8987-c559-4422-9e11-9f5eec7b60f0">
+        <config>
+          <option name="projectRootOnTarget" value="$USER_HOME$/Needle" />
+          <option name="serverName" value="root@shenzhen.server:22 key" />
+          <option name="useRsync" value="true" />
+        </config>
+        <ContributedStateBase type="GoLanguageRuntime">
+          <config>
+            <option name="goPath" value="$USER_HOME$/go" />
+            <option name="goRoot" value="/usr/local/bin/go" />
+            <option name="goVersion" value="go1.21.5 linux/amd64" />
+          </config>
+        </ContributedStateBase>
+      </target>
+      <target name="root@shenzhen.server:22" type="ssh/sftp" uuid="975a57c6-fd8f-46d4-b054-f146f53af353">
+        <config>
+          <option name="projectRootOnTarget" value="$USER_HOME$/Needle" />
+          <option name="serverName" value="root@shenzhen.server:22 key" />
+          <option name="useRsync" value="true" />
+        </config>
+        <ContributedStateBase type="GoLanguageRuntime">
+          <config>
+            <option name="goPath" value="$USER_HOME$/go" />
+            <option name="goRoot" value="$USER_HOME$/go1.22.2.linux-amd64/go/bin/go" />
+            <option name="goVersion" value="go1.22.2 linux/amd64" />
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>

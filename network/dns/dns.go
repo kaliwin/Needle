@@ -23,7 +23,7 @@ func ServeDNS(address string, DomainSuffix []string, yourIP string) error {
 		for _, q := range r.Question {
 			// 查询域名和对应的 IP 地址
 			domain := strings.ToLower(q.Name)
-
+			fmt.Println(domain)
 			for _, suffix := range DomainSuffix {
 				if strings.Index(domain, suffix) != -1 { // 如果是需要劫持的域名
 					ip := yourIP // 替换为你想要映射的 IP 地址

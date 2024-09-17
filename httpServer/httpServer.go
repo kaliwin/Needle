@@ -92,12 +92,15 @@ func main() {
 	//go test.Go()
 
 	//
-	go dns.ServeDNS(":53", []string{"wodataprov.chinaunicom.cn", "uepm.newbuy.chinaunicom.cn"}, "192.168.3.108")
+	err := dns.ServeDNS(":53", []string{"xcheck"}, "192.168.3.108")
 
-	err := middleman.StartMiddleman(":443", "http://127.0.0.1:8080", "/root/cyvk/ManDown/CA/burpCA.cer", "/root/cyvk/ManDown/CA/burpCA-key.cer")
+	//err := middleman.StartMiddleman(":443", "http://127.0.0.1:12333", "/root/cyvk/ManDown/CA/burpCA.cer", "/root/cyvk/ManDown/CA/burpCA-key.cer")
 	if err != nil {
 		panic(err)
 	}
+
+	//fmt.Println("dd")
+
 	//middlemanHttp.HttpServer.Addr = ":9010"
 	//middlemanHttp.HttpServer.ListenAndServe()
 }

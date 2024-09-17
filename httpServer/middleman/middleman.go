@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 )
 
 // StartMiddleman 启动中间人
@@ -45,7 +46,7 @@ func StartMiddleman(serverAddr string, proxyAdder string, CACertPath string, CAK
 			r.URL.Host = r.Host
 			r.RequestURI = ""
 			//r.Host = "www.baidu.com"
-			//fmt.Println(r.URL.String())
+			fmt.Println(r.URL.String())
 			do, err := c.Do(r)
 			if err != nil {
 				log.Println(err)
@@ -59,6 +60,10 @@ func StartMiddleman(serverAddr string, proxyAdder string, CACertPath string, CAK
 			}
 
 			all, _ := io.ReadAll(do.Body)
+			if strings.Index(r.URL.String(), "list") != -1 {
+				fmt.Println(string(all))
+			}
+
 			w.WriteHeader(do.StatusCode) // 设置状态码
 			w.Write(all)                 // 写回响应体
 		}),

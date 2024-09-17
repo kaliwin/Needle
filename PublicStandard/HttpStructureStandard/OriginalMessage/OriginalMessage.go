@@ -10,13 +10,15 @@ import (
 // http 原始报文格式
 
 // Head 头
-type Head map[string]string
+type Head map[string][]string
 
 // BuildMessage 构建报文
 func (h Head) BuildMessage() []byte {
 	message := make([]byte, 0)
 	for k, v := range h {
-		message = append(append(message, []byte(k+": "+v)...), LineBreaks...)
+		for _, s := range v {
+			message = append(append(message, []byte(k+": "+s)...), LineBreaks...)
+		}
 	}
 	return message
 }
@@ -30,10 +32,8 @@ type RequestOriginalMessage struct {
 
 // BuildMessage 构建报文
 func (r RequestOriginalMessage) BuildMessage() []byte {
-	//message := make([]byte, 0)
-
 	if len(r.Body) > 0 {
-		r.Head[ContentLength] = strconv.Itoa(len(r.Body))
+		r.Head[ContentLength] = []string{strconv.Itoa(len(r.Body))} // ContentLength 只能有一个
 	}
 
 	bytes := append(r.RequestLine.BuildMessage(), r.Head.BuildMessage()...)
@@ -96,6 +96,10 @@ type ResponseOriginalMessage struct {
 
 // BuildMessage 构建响应报文
 func (receiver ResponseOriginalMessage) BuildMessage() []byte {
+	if len(receiver.Body) > 0 {
+		receiver.Head[ContentLength] = []string{strconv.Itoa(len(receiver.Body))} // ContentLength 只能有一个
+	}
+
 	bytes := append(receiver.ResponseLine.BuildMessage(), receiver.Head.BuildMessage()...)
 	bytes = append(bytes, LineBreaks...)
 	bytes = append(bytes, receiver.Body...)
@@ -150,7 +154,7 @@ func ParseRequestOriginalMessage(reqData []byte) (RequestOriginalMessage, error)
 			if err != nil {
 				return reqMessage, err
 			}
-			head[parseHead] = s
+			head[parseHead] = append(head[parseHead], s)
 			headIndex = i + 2
 		}
 	}
@@ -161,6 +165,57 @@ func ParseRequestOriginalMessage(reqData []byte) (RequestOriginalMessage, error)
 	reqMessage.Head = head
 
 	return reqMessage, nil
+}
+
+// ParseResponseOriginalMessage 解析请求原始报文
+func ParseResponseOriginalMessage(resData []byte) (ResponseOriginalMessage, error) {
+
+	resMessage := ResponseOriginalMessage{}
+	index := 0
+	for i, datum := range resData { // 解析请求行
+		if datum == Enter {
+			line := ParseLine(resData[:i])
+			if len(line) < 1 {
+				return resMessage, errors.New("response line format error")
+			}
+
+			resMessage.ResponseLine = ResponseLine{
+				HttpVersion: line[0], // http版本
+				StatusCode:  strings.Join(line[1:], " "),
+			}
+
+			index = i + 2
+			break
+		}
+	}
+
+	headData := resData[index:]
+
+	headIndex := 0
+
+	head := make(Head)
+
+	for i, b := range headData {
+		if b == Enter { // 回车符
+			if i == headIndex { // 空行
+				headIndex += 2
+				break
+			}
+			parseHead, s, err := ParseHead(headData[headIndex:i])
+			if err != nil {
+				return resMessage, err
+			}
+			head[parseHead] = append(head[parseHead], s)
+			headIndex = i + 2
+		}
+	}
+
+	body := headData[headIndex:]
+
+	resMessage.Body = body
+	resMessage.Head = head
+
+	return resMessage, nil
 }
 
 // ParseLine 解析行 以空格分割
@@ -177,4 +232,33 @@ func ParseHead(data []byte) (string, string, error) {
 	}
 
 	return str[:index], str[index+2:], nil
+}
+
+// NewBaseRequestOriginalMessage 创建默认请求原始报文
+func NewBaseRequestOriginalMessage() RequestOriginalMessage {
+	message := RequestOriginalMessage{}
+	message.RequestLine = RequestLine{
+		Method:      "GET",
+		Path:        "/",
+		HttpVersion: Http1,
+	}
+
+	head := make(Head)
+	head["Host"] = []string{"mandown.xyz"}
+	message.Head = head
+	return message
+}
+
+// NewBaseResponseOriginalMessage 创建默认响应原始报文
+func NewBaseResponseOriginalMessage() ResponseOriginalMessage {
+	message := ResponseOriginalMessage{}
+	message.ResponseLine = ResponseLine{
+		HttpVersion: Http1,
+		StatusCode:  "200 OK",
+	}
+	message.Head = make(Head)
+	message.Head["Server"] = []string{"nginx/1.14.0"}
+	message.Body = []byte("Hello World")
+
+	return message
 }
